@@ -62,3 +62,20 @@ If you want to build it by hand (or understand what the scripts are actually doi
 ## A note on credentials
 
 Nothing in this repo contains a real password, API key, or infrastructure identifier. `infra/.env.example` uses placeholder values only (`changeme`) — your actual broker passwords and AWS details belong in your own local `.env`, which `.gitignore` excludes from version control. Don't commit a filled-in `.env`, and don't paste real IPs or credentials into the HTML docs if you fork or extend them.
+
+## Credits / third-party components
+
+This demo is built on top of several tools, container images, and assets we didn't write:
+
+- **[Solace PubSub+](https://solace.com)** — the event broker this whole demo is built around (`solace/solace-pubsub-standard` Docker image).
+- **[`rtsp2solace`](https://hub.docker.com/r/paulusgunadi512/rtsp2solace) and [`solace2rtsp`](https://hub.docker.com/r/paulusgunadi512/solace2rtsp)** (Docker Hub user `paulusgunadi512`) — the `src_cascade` and `sink_cascade` containers that bridge RTSP video into and out of Solace messages. Core to the whole video-resilience demo.
+- **[MediaMTX](https://github.com/bluenviron/mediamtx)** (bluenviron, MIT license) — the RTSP server and browser video-bridge (`server`, `rtsp_bridge` containers).
+- **[Ultralytics YOLO](https://github.com/ultralytics/ultralytics)** — the object-detection framework used for Part Two's drone detection.
+- **[Drone-Detection-YOLOv11x](https://huggingface.co/doguilmak/Drone-Detection-YOLOv11x)** (Hugging Face user `doguilmak`) — the pretrained drone-detection weights `07-gpu-setup.sh` downloads.
+- **[Big Buck Bunny](https://www.bigbuckbunny.org)**, © copyright 2008, Blender Foundation — the fallback stand-in video clip `02-source-setup.sh` downloads if you don't supply your own. Licensed Creative Commons Attribution 3.0; this demo uses it only as placeholder footage and credits it here per that license.
+- **[Leaflet](https://leafletjs.com)** and **[Leaflet.draw](https://github.com/Leaflet/Leaflet.draw)** (BSD-2-Clause) — the mapping library behind `track-fusion-map.html`'s live map and geofence drawing tools.
+- **[MQTT.js](https://github.com/mqttjs/MQTT.js)** — the MQTT-over-WebSocket client the live map uses to subscribe to sensor tracks directly from the browser.
+- Basemap tiles via **Esri** (World Dark Gray Base/Reference), with data from Esri, HERE, Garmin, FAO, NOAA, USGS, and **OpenStreetMap** contributors — attribution renders automatically in the map's own attribution control, per their terms of use.
+- **[Figtree](https://fonts.google.com/specimen/Figtree)** and **[Space Mono](https://fonts.google.com/specimen/Space+Mono)** (Google Fonts, Open Font License) — the typography used across the Solace-branded documents.
+
+If you fork this project and swap in your own video clip or model weights, you can drop the corresponding credit line — these exist because this build specifically uses those assets.
