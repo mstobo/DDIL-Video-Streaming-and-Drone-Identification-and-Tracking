@@ -1,0 +1,1431 @@
+<title>Tactical Field Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#03213B;
+    --panel:#093B5F;
+    --ink:#FFFFFF;
+    --muted:#D6D6D6;
+    --line:#009193;
+    --accent:#00C895;
+    --chip-bg:#093B5F;
+    --chip-ink:#00C895;
+    --console-bg:#03213B;
+    --console-ink:#ABFF88;
+    --console-accent:#00C895;
+    --console-line:#093B5F;
+    --font-display:Calibri, Aptos, Georgia, serif;
+    --font-body:"Figtree", "Segoe UI", sans-serif;
+    --font-mono:"Space Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#03213B; --panel:#093B5F; --ink:#FFFFFF; --muted:#D6D6D6;
+      --line:#009193; --accent:#00C895; --chip-bg:#093B5F; --chip-ink:#00C895;
+      --console-bg:#03213B; --console-ink:#ABFF88; --console-accent:#00C895; --console-line:#093B5F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#03213B; --panel:#093B5F; --ink:#FFFFFF; --muted:#D6D6D6;
+    --line:#009193; --accent:#00C895; --chip-bg:#093B5F; --chip-ink:#00C895;
+    --console-bg:#03213B; --console-ink:#ABFF88; --console-accent:#00C895; --console-line:#093B5F;
+  }
+
+  *{box-sizing:border-box;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-body);
+    font-size:16px;line-height:1.6;margin:0;padding:0 20px 96px;}
+  .wrap{max-width:780px;margin:0 auto;}
+
+  h1,h2{font-family:var(--font-display);font-weight:800;letter-spacing:0.01em;
+    text-wrap:balance;margin:0;}
+  h3,h4,h5{font-family:var(--font-body);font-weight:700;letter-spacing:0.01em;
+    text-wrap:balance;margin:0;}
+
+  .kicker{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--chip-ink);background:var(--chip-bg);
+    display:inline-block;padding:4px 10px;margin:40px 0 16px;}
+
+  h1.title{font-size:clamp(32px,5.5vw,50px);line-height:0.98;margin-bottom:14px;}
+  .dek{color:var(--muted);font-size:17px;max-width:62ch;margin-bottom:18px;}
+  .lineage{font-size:14px;color:var(--muted);margin-bottom:28px;}
+  .lineage a{color:var(--ink);}
+
+  .value-prop{border:1.5px solid var(--ink);background:var(--panel);padding:24px 26px;
+    margin:28px 0 36px;}
+  .value-prop .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--accent);display:block;margin-bottom:10px;}
+  .value-prop p{margin:0 0 12px;font-size:15.5px;}
+  .value-prop p:last-child{margin-bottom:0;}
+  .value-prop strong{color:var(--ink);}
+
+  .ops-block{border:1px solid var(--line);background:var(--panel);padding:22px 24px;
+    display:grid;grid-template-columns:1fr 1fr;gap:16px 28px;margin-bottom:40px;}
+  .ops-field dt{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:4px;}
+  .ops-field dd{margin:0;font-size:15px;}
+  .ops-field{margin:0;}
+
+  .day-label{font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--accent);margin:0 0 8px;}
+  .timeline{display:flex;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    margin:0 0 32px;overflow-x:auto;}
+  .timeline.last{margin-bottom:48px;}
+  .timeline .seg{flex:1 0 auto;min-width:84px;padding:10px 12px;border-left:1px solid var(--line);}
+  .timeline .seg:first-child{border-left:none;}
+  .timeline .seg .hr{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.04em;}
+  .timeline .seg .lbl{font-size:12px;font-weight:600;margin-top:2px;}
+
+  section.phase{margin:56px 0;}
+  .phase-head{display:flex;align-items:baseline;gap:16px;border-bottom:1px solid var(--line);
+    padding-bottom:12px;margin-bottom:18px;}
+  .phase-num{font-family:var(--font-display);font-weight:800;font-size:44px;color:var(--accent);line-height:1;}
+  .phase-title{font-family:var(--font-display);font-weight:700;font-size:24px;}
+  .phase-obj{color:var(--muted);font-size:15px;margin:-6px 0 20px;max-width:58ch;}
+
+  p{margin:14px 0;}
+  ul.steps, ol.steps{margin:14px 0;padding-left:22px;}
+  ul.steps li, ol.steps li{margin:8px 0;}
+  strong{font-weight:600;}
+  code.inline{font-family:var(--font-mono);font-size:0.9em;background:var(--panel);
+    border:1px solid var(--line);padding:1px 5px;}
+
+  .cmd{margin:18px 0;border:1px solid var(--console-line);}
+  .cmd-bar{display:flex;justify-content:space-between;align-items:center;
+    background:var(--console-line);padding:6px 10px;}
+  .cmd-host{font-family:var(--font-mono);font-size:12px;color:var(--console-accent);letter-spacing:0.03em;}
+  .copy-btn{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;
+    background:transparent;border:1px solid var(--console-accent);color:var(--console-accent);
+    padding:3px 9px;cursor:pointer;}
+  .copy-btn:hover{background:var(--console-accent);color:var(--console-bg);}
+  .copy-btn:focus-visible, a:focus-visible, button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .cmd pre{margin:0;background:var(--console-bg);color:var(--console-ink);padding:14px 16px;
+    overflow-x:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.55;}
+  .cmd pre code{white-space:pre;}
+
+  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;
+    margin:20px 0;font-size:14.5px;}
+  .callout .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--accent);display:block;margin-bottom:4px;}
+
+  .checklist{list-style:none;margin:16px 0;padding:0;}
+  .checklist li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14.5px;}
+  .checklist li::before{content:"";flex:0 0 auto;width:14px;height:14px;margin-top:3px;
+    border:1.5px solid var(--muted);}
+
+  table.ports{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+  table.ports th, table.ports td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);
+    font-variant-numeric:tabular-nums;}
+  table.ports th{font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--accent);font-weight:500;}
+
+  figure.diagram{margin:28px 0 8px;padding:0;}
+  figure.diagram .fig-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;
+    text-transform:uppercase;color:var(--accent);margin:0 0 10px;}
+  figure.diagram svg{width:100%;height:auto;display:block;color:var(--ink);}
+  figure.diagram figcaption{color:var(--muted);font-size:14px;max-width:70ch;margin-top:12px;}
+
+  footer{margin-top:70px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;}
+
+  .part-divider{margin:88px 0 40px;padding:28px 0 4px;border-top:3px solid var(--ink);
+    border-bottom:1px solid var(--line);display:flex;gap:22px;align-items:flex-start;}
+  .part-num{font-family:var(--font-display);font-weight:800;font-size:60px;color:var(--accent);line-height:0.9;}
+  .part-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:4px;}
+  .part-title{font-family:var(--font-display);font-size:30px;margin:0 0 10px;}
+  .part-dek{color:var(--muted);font-size:15.5px;max-width:58ch;margin:0;}
+
+  @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+</style>
+
+<div class="wrap">
+
+  <span class="kicker">AWS + Solace &middot; Complete Build &middot; Rev. 5</span>
+  <h1 class="title">Tactical Field Manual</h1>
+  <p class="dek">One document, start to finish: a shaped and flooded network link, two Solace PubSub+ brokers bridged across it, and a direct-UDP video stream running side by side with an RTSP stream carried over Solace &mdash; so the same network flood produces two different outcomes.</p>
+  <p class="lineage">Rev. 5 &mdash; corrects the bridge's video subscription to what was actually verified working end to end: <code class="inline">s/v/c01/&gt;</code> crosses as a Guaranteed queue subscription, not Direct. Documents the real fixes it took to get there (a bridge Remote Message VPN address that must be a real IP, not an unresolvable <code class="inline">v:&lt;name&gt;</code>; persistent broker storage; a browser-facing RTSP bridge with an RTMP-push workaround for a legacy codec-mislabeling bug unrelated to Solace). Part Three's track generator and viewer are now a parameterized, multi-site publisher and a Solace-branded live fusion map with exact-match geofencing and clickable camera markers. Adds Part Two: real-time drone detection running against the resilient feed. Base link unchanged from <a href="https://claude.ai/code/artifact/68fbb134-cc5e-495a-ac06-9dcb92f85e62">Tactical Link Runbook</a>.</p>
+
+  <div class="value-prop">
+    <span class="tag">Why this exists</span>
+    <p>A live camera feed sent as plain UDP video has no way to recover from a bad network moment &mdash; a burst of loss corrupts the decoder's reference frames and the picture freezes for good, even after the network recovers. This build puts that exact failure next to its fix, side by side, on the same link: the same camera feed, published once, carried to a second site over a <strong>Solace PubSub+ bridge using Guaranteed Messaging</strong>. Under identical injected congestion, the plain UDP window locks up permanently. The Solace-carried window stalls too &mdash; briefly &mdash; then <strong>catches up and keeps playing</strong>, because Solace held the video at the source until the link could take it again.</p>
+    <p>Everything here runs on off-the-shelf pieces: Solace's own PubSub+ broker container, its <code class="inline">rtsp2solace</code>/<code class="inline">solace2rtsp</code> reference images, and standard Linux traffic-shaping tools. Part One is a complete, self-contained demo buildable in about a day. Part Two adds real-time AI object detection running directly against the resilient feed &mdash; the point being that guaranteed delivery isn't just about a clean picture, it's what keeps a live detection pipeline actually seeing anything once the network gets bad.</p>
+  </div>
+
+  <dl class="ops-block">
+    <div class="ops-field"><dt>Objective</dt><dd>Show a direct UDP video stream freeze permanently under injected network congestion, while the same video, carried over a Solace PubSub+ bridge, stalls and recovers.</dd></div>
+    <div class="ops-field"><dt>Platform</dt><dd>AWS &mdash; 1 VPC, 3 subnets, 3 EC2 instances; 2 Solace PubSub+ Standard brokers bridged directly; rtsp2solace / solace2rtsp / mediamtx</dd></div>
+    <div class="ops-field"><dt>Method</dt><dd>tc/netem shaping + iperf3 flood; the sink runs a Guaranteed, non-durable queue fed across the bridge, so it survives loss the plain UDP path can't</dd></div>
+    <div class="ops-field"><dt>Teardown</dt><dd>Full stack &mdash; containers, brokers, and AWS resources &mdash; removable in Phase 07</dd></div>
+  </dl>
+
+  <p class="lineage">This is the deliverable: Phases 00&ndash;07 are the video demo, complete and self-contained. Part Two, after Phase 07, adds real-time drone detection on top of the resilient feed and needs one more EC2 instance. Part Three, after that, is an independent extension carrying synthetic sensor telemetry instead of video. Build either, both, or neither &mdash; the video demo doesn't depend on them.</p>
+
+  <figure class="diagram">
+    <span class="fig-label">Diagram 1 &mdash; core video path</span>
+    <svg viewBox="0 0 900 480" role="img" aria-label="A plain UDP video stream and a Solace-bridged RTSP stream both cross the same shaped, flooded shaper interface. The direct path has no recovery from loss. The bridged path publishes direct to a local Broker A; a Solace bridge to Broker B carries the DESCRIBE request and its reply as Direct messages and the video topic itself as a Guaranteed queue subscription, and the sink's own Guaranteed non-durable queue captures it on the far side.">
+      <defs>
+        <marker id="da1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><polygon points="0,0 7,3 0,6" fill="currentColor"/></marker>
+        <marker id="da2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><polygon points="0,0 7,3 0,6" style="fill:var(--accent)"/></marker>
+      </defs>
+
+      <rect x="10" y="15" width="270" height="440" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>
+      <text x="145" y="10" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" letter-spacing="0.08em" fill="currentColor" opacity="0.75">SOURCE SUBNET</text>
+
+      <rect x="35" y="35" width="220" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="56" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">ffmpeg &mdash; direct UDP</text>
+
+      <rect x="35" y="115" width="220" height="40" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="132" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">RTSP source</text>
+      <text x="145" y="147" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" fill="currentColor" opacity="0.75">mediamtx + reader</text>
+
+      <line x1="145" y1="155" x2="145" y2="178" stroke="currentColor" stroke-width="1.1" marker-end="url(#da1)"/>
+
+      <rect x="35" y="180" width="220" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="201" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">src_cascade</text>
+      <text x="270" y="200" text-anchor="end" font-family="'Space Mono', monospace" font-size="9" fill="currentColor" opacity="0.7">publish &middot; direct</text>
+
+      <line x1="145" y1="214" x2="145" y2="248" stroke="currentColor" stroke-width="1.1" marker-end="url(#da1)"/>
+
+      <rect x="35" y="250" width="220" height="46" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="270" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" font-weight="600" fill="currentColor">Broker A</text>
+      <text x="145" y="285" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" fill="currentColor" opacity="0.75">bridge object bridge-to-b</text>
+
+      <rect x="370" y="15" width="200" height="410" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <text x="470" y="10" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" font-weight="600" fill="currentColor">SHAPER</text>
+
+      <polygon points="405,195 495,195 480,240 420,240" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <text x="450" y="187" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10.5" fill="currentColor">tc/netem queue</text>
+
+      <line x1="257" y1="52" x2="403" y2="202" stroke="currentColor" stroke-width="1.2" marker-end="url(#da1)"/>
+      <text x="300" y="120" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" fill="currentColor">UDP :5004</text>
+
+      <line x1="257" y1="273" x2="403" y2="232" stroke="currentColor" stroke-width="1.2" marker-end="url(#da2)"/>
+      <line x1="403" y1="222" x2="257" y2="278" stroke="currentColor" stroke-width="1.2" style="stroke:var(--accent)" marker-end="url(#da2)"/>
+      <text x="300" y="255" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" font-weight="600" style="fill:var(--accent)">SMF bridge :55555</text>
+
+      <line x1="470" y1="305" x2="470" y2="242" stroke="currentColor" stroke-width="1.2" marker-end="url(#da1)"/>
+      <text x="470" y="320" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="currentColor">iperf3 flood</text>
+
+      <line x1="497" y1="202" x2="608" y2="52" stroke="currentColor" stroke-width="1.2" marker-end="url(#da1)"/>
+      <line x1="497" y1="222" x2="608" y2="270" stroke="currentColor" stroke-width="1.2" style="stroke:var(--accent)" marker-end="url(#da2)"/>
+      <line x1="608" y1="290" x2="497" y2="232" stroke="currentColor" stroke-width="1.2" style="stroke:var(--accent)" marker-end="url(#da2)"/>
+
+      <rect x="610" y="15" width="260" height="440" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>
+      <text x="740" y="10" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" letter-spacing="0.08em" fill="currentColor" opacity="0.75">RECEIVER SUBNET</text>
+
+      <rect x="625" y="35" width="230" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="740" y="56" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">Direct UDP viewer</text>
+
+      <rect x="625" y="255" width="230" height="46" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="740" y="275" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" font-weight="600" fill="currentColor">Broker B</text>
+      <text x="740" y="290" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" fill="currentColor" opacity="0.75">bridge object bridge-to-a</text>
+
+      <line x1="740" y1="301" x2="740" y2="320" stroke="currentColor" stroke-width="1.1" marker-end="url(#da1)"/>
+      <rect x="625" y="322" width="230" height="40" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="740" y="341" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">sink_cascade</text>
+      <text x="740" y="355" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="currentColor" opacity="0.75">GM non-durable queue, local to Broker B</text>
+
+      <line x1="740" y1="362" x2="740" y2="381" stroke="currentColor" stroke-width="1.1" marker-end="url(#da1)"/>
+      <rect x="625" y="383" width="230" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="740" y="404" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">Via Solace viewer</text>
+    </svg>
+    <figcaption>Two flows cross one shaped interface. The direct-UDP path has no recovery &mdash; a dropped packet is gone for good. <code class="inline">src_cascade</code> publishes direct to the local Broker A; the bridge to Broker B carries the DESCRIBE request and its reply as Direct messages, and the video topic itself as a Guaranteed queue subscription (queue <code class="inline">bridge2bQ</code>) &mdash; carrying it Guaranteed, not Direct, is what actually rides out the loss, before <code class="inline">sink_cascade</code>'s own local non-durable queue on Broker B ever sees it.</figcaption>
+  </figure>
+
+  <div class="day-label">Day 1 &mdash; the shaped link</div>
+  <div class="timeline">
+    <div class="seg"><div class="hr">HR 0&ndash;1</div><div class="lbl">Provision</div></div>
+    <div class="seg"><div class="hr">HR 1&ndash;2</div><div class="lbl">Force the route</div></div>
+    <div class="seg"><div class="hr">HR 2&ndash;4</div><div class="lbl">Shape the link</div></div>
+    <div class="seg"><div class="hr">HR 4&ndash;8</div><div class="lbl">Rehearse baseline</div></div>
+  </div>
+  <div class="day-label">Day 2 &mdash; the Solace bridge</div>
+  <div class="timeline last">
+    <div class="seg"><div class="hr">HR 0&ndash;1</div><div class="lbl">Two brokers</div></div>
+    <div class="seg"><div class="hr">HR 1&ndash;2</div><div class="lbl">Bridge &amp; subscriptions</div></div>
+    <div class="seg"><div class="hr">HR 2&ndash;4</div><div class="lbl">Wire &amp; view both</div></div>
+    <div class="seg"><div class="hr">HR 4&ndash;5</div><div class="lbl">Inject &amp; compare</div></div>
+    <div class="seg"><div class="hr">HR 5&ndash;8</div><div class="lbl">Rehearse &amp; buffer</div></div>
+  </div>
+
+  <!-- PHASE 00 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">00</span><span class="phase-title">Provision</span></div>
+    <p class="phase-obj">One VPC, three subnets, three instances. Source and receiver each run a broker alongside their containers, so both are sized up; the shaper stays small.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export AWS_REGION=us-east-1
+export KEY_NAME=your-existing-keypair
+export AZ=${AWS_REGION}a
+
+export VPC_ID=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 \
+  --query 'Vpc.VpcId' --output text --region $AWS_REGION)
+aws ec2 create-tags --resources $VPC_ID --tags Key=Name,Value=dil-demo --region $AWS_REGION
+export IGW_ID=$(aws ec2 create-internet-gateway --query 'InternetGateway.InternetGatewayId' \
+  --output text --region $AWS_REGION)
+aws ec2 attach-internet-gateway --vpc-id $VPC_ID --internet-gateway-id $IGW_ID --region $AWS_REGION
+
+export SUBNET_SRC=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.1.0/24 \
+  --availability-zone $AZ --query 'Subnet.SubnetId' --output text --region $AWS_REGION)
+export SUBNET_SHAPE=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.2.0/24 \
+  --availability-zone $AZ --query 'Subnet.SubnetId' --output text --region $AWS_REGION)
+export SUBNET_RCV=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.3.0/24 \
+  --availability-zone $AZ --query 'Subnet.SubnetId' --output text --region $AWS_REGION)
+
+for s in $SUBNET_SRC $SUBNET_SHAPE $SUBNET_RCV; do
+  aws ec2 modify-subnet-attribute --subnet-id $s --map-public-ip-on-launch --region $AWS_REGION
+done</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># One route table per subnet, each with an internet route (for SSH/updates)
+for pair in "SRC:$SUBNET_SRC" "SHAPE:$SUBNET_SHAPE" "RCV:$SUBNET_RCV"; do
+  name=${pair%%:*}; sn=${pair##*:}
+  rtb=$(aws ec2 create-route-table --vpc-id $VPC_ID --query 'RouteTable.RouteTableId' \
+    --output text --region $AWS_REGION)
+  aws ec2 create-route --route-table-id $rtb --destination-cidr-block 0.0.0.0/0 \
+    --gateway-id $IGW_ID --region $AWS_REGION
+  aws ec2 associate-route-table --route-table-id $rtb --subnet-id $sn --region $AWS_REGION
+  export RTB_$name=$rtb
+done
+
+export SG_ID=$(aws ec2 create-security-group --group-name dil-demo-sg \
+  --description "DIL demo" --vpc-id $VPC_ID --query 'GroupId' --output text --region $AWS_REGION)
+export MY_IP=$(curl -4 -s ifconfig.me)/32
+aws ec2 authorize-security-group-ingress --group-id $SG_ID --protocol tcp --port 22 \
+  --cidr $MY_IP --region $AWS_REGION
+aws ec2 authorize-security-group-ingress --group-id $SG_ID --protocol -1 \
+  --cidr 10.0.0.0/16 --region $AWS_REGION</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export AMI_ID=$(aws ssm get-parameters --names \
+  /aws/service/canonical/ubuntu/server/22.04/stable/current/amd64/hvm/ebs-gp2/ami-id \
+  --query 'Parameters[0].Value' --output text --region $AWS_REGION)
+
+launch() { aws ec2 run-instances --image-id $AMI_ID --instance-type $3 \
+  --key-name $KEY_NAME --subnet-id $1 --security-group-ids $SG_ID \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$2}]" \
+  --query 'Instances[0].InstanceId' --output text --region $AWS_REGION; }
+
+export INSTANCE_SRC=$(launch $SUBNET_SRC dil-source t3.medium)
+export INSTANCE_SHAPE=$(launch $SUBNET_SHAPE dil-shaper t3.small)
+export INSTANCE_RCV=$(launch $SUBNET_RCV dil-receiver t3.medium)
+
+aws ec2 wait instance-running --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV --region $AWS_REGION
+
+aws ec2 describe-instances --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV \
+  --query 'Reservations[].Instances[].[Tags[?Key==`Name`].Value|[0],PublicIpAddress,PrivateIpAddress,NetworkInterfaces[0].NetworkInterfaceId]' \
+  --output table --region $AWS_REGION</code></pre>
+    </div>
+
+    <p>Save the IPs and the shaper's ENI id from that table &mdash; every later phase needs them. Then install what each role uses &mdash; no JDK, no build tools, just Docker and the pieces for the direct-UDP comparison path:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source + receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo apt-get update
+sudo apt-get install -y ffmpeg iperf3 vlc
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+# log out and back in (or `newgrp docker`) for the group change to take effect</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      Docker's convenience script installs the engine and the <code class="inline">docker compose</code> v2 plugin together, matching every <code class="inline">docker compose</code> command in this manual &mdash; Ubuntu's own archives carry <code class="inline">docker.io</code> but not the compose plugin.
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo apt-get update && sudo apt-get install -y iproute2</code></pre>
+    </div>
+  </section>
+
+  <!-- PHASE 01 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">01</span><span class="phase-title">Force the route</span></div>
+    <p class="phase-obj">Point source&rarr;receiver and receiver&rarr;source traffic at the shaper's ENI, and let the shaper forward it &mdash; every flow in this build crosses here, video and Solace traffic alike.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export ENI_SHAPE=eni-xxxxxxxxxxxxxxxxx
+export IP_SRC_PRIV=10.0.1.x
+export IP_RCV_PRIV=10.0.3.x
+export CIDR_SRC=10.0.1.0/24
+export CIDR_RCV=10.0.3.0/24
+
+aws ec2 modify-instance-attribute --instance-id $INSTANCE_SHAPE \
+  --no-source-dest-check --region $AWS_REGION
+
+aws ec2 create-route --route-table-id $RTB_SRC --destination-cidr-block $CIDR_RCV \
+  --network-interface-id $ENI_SHAPE --region $AWS_REGION
+aws ec2 create-route --route-table-id $RTB_RCV --destination-cidr-block $CIDR_SRC \
+  --network-interface-id $ENI_SHAPE --region $AWS_REGION</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo sysctl -w net.ipv4.ip_forward=1
+echo 'net.ipv4.ip_forward=1' | sudo tee -a /etc/sysctl.conf</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export IP_RCV_PRIV=10.0.3.x   # from Phase 00's table
+traceroute $IP_RCV_PRIV
+# expect exactly one hop: the shaper's private IP</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for</span>
+      Each host's own shell needs <code class="inline">$IP_SRC_PRIV</code>/<code class="inline">$IP_RCV_PRIV</code> re-exported from Phase 00's table &mdash; SSH doesn't carry local shell variables into a remote session. If <code class="inline">traceroute</code> shows a direct hop instead of routing through the shaper, reconnect after toggling source/dest check off; it doesn't apply retroactively to an existing connection.
+    </div>
+  </section>
+
+  <!-- PHASE 02 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">02</span><span class="phase-title">Shape the link</span></div>
+    <p class="phase-obj">Cap the shaper's egress to a tactical-radio-like ceiling, sized for two video streams running at once, and add delay, jitter, and loss with netem.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export IFACE=$(ip -o -4 route show to default | awk '{print $5}')
+echo $IFACE   # ens5 on most current-generation instance types, not eth0
+
+sudo tc qdisc replace dev $IFACE root handle 1: htb default 10
+sudo tc class add dev $IFACE parent 1: classid 1:10 htb rate 768kbit ceil 768kbit
+sudo tc qdisc add dev $IFACE parent 1:10 handle 10: netem \
+  delay 100ms 20ms 25% distribution normal loss 2% 25%
+
+tc -s qdisc show dev $IFACE</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      The <code class="inline">25%</code> after the jitter value correlates each packet's delay with the one before it. Without it, video's bursty packets &mdash; several UDP datagrams per frame, sent within milliseconds of each other &mdash; can arrive out of order purely from independent random jitter, even with near-zero actual loss, and MPEG-TS continuity counters treat reordering the same as a drop. This correlation term keeps the shaping realistic for video traffic specifically, not just for a simple throughput test.
+    </div>
+
+    <div class="callout">
+      <span class="tag">Why 768 kbit</span>
+      This build runs a direct video stream and a Solace-carried one at once. 768&nbsp;kbit gives both comfortable headroom under normal conditions, so the flood in Phase 06 &mdash; not ordinary two-stream contention &mdash; is what causes the freeze.
+    </div>
+
+    <p>Reset any time with <code class="inline">sudo tc qdisc del dev $IFACE root</code>. For the intermittent half of DIL &mdash; comms windows that drop out entirely rather than just degrading &mdash; toggle to full loss on a timer:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cat &lt;&lt;'EOF' &gt; ~/blackout.sh
+#!/bin/bash
+IFACE=$(ip -o -4 route show to default | awk '{print $5}')
+while true; do
+  sudo tc qdisc change dev $IFACE parent 1:10 handle 10: netem delay 100ms 20ms 25% loss 2% 25%
+  sleep 45
+  sudo tc qdisc change dev $IFACE parent 1:10 handle 10: netem loss 100%
+  sleep 8
+done
+EOF
+chmod +x ~/blackout.sh</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for</span>
+      <code class="inline">tc</code> rules do not survive a reboot or a stop/start cycle &mdash; reapply them before any rehearsal if the shaper instance restarted for any reason.
+    </div>
+  </section>
+
+  <!-- PHASE 03 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">03</span><span class="phase-title">Two brokers, one bridge</span></div>
+    <p class="phase-obj">Broker A on the source, Broker B on the receiver. The source cascade publishes only to its own local broker; the sink cascade consumes only from its own local broker. The bridge between them, wired in Phase 04, is what actually crosses the shaped link.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cat &lt;&lt;'EOF' &gt; docker-compose.yml
+services:
+  server:
+    image: bluenviron/mediamtx
+  reader:
+    depends_on:
+      - server
+    image: selenium/ffmpeg
+    command: ffmpeg -re -stream_loop -1 -i /src/video.mp4 -f rtsp rtsp://server:8554/mystream
+    volumes:
+      - ./src:/src
+  broker-a:
+    image: solace/solace-pubsub-standard
+    shm_size: 2gb
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 1048576
+        hard: 1048576
+    environment:
+      - username_admin_globalaccesslevel=admin
+      - username_admin_password=${BROKER_ADMIN_PASS}
+    ports:
+      - 55555:55555
+      - 8080:8080
+    volumes:
+      - broker-a-data:/var/lib/solace
+  src_cascade:
+    depends_on:
+      - reader
+      - broker-a
+    image: paulusgunadi512/rtsp2solace:1.0.260915
+    environment:
+      - SOLACE_HOST=broker-a:55555
+      - SOLACE_VPN=default
+      - SOLACE_USERNAME=${VIDEO_DEMO_USER}
+      - SOLACE_PASSWORD=${VIDEO_DEMO_PASS}
+      - RTSP_URL=rtsp://server:8554/mystream
+      - CAM_NAME=c01
+      - ENABLE_RTCP=0
+
+volumes:
+  broker-a-data:
+EOF</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $ &mdash; upload the source clip</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>mkdir -p src   # run on the source host first, via ssh
+scp -i ~/Downloads/your-key.pem /path/to/your-video.mp4 ubuntu@&lt;source-public-ip&gt;:~/src/video.mp4</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      Any local mp4 works here &mdash; audience-appropriate footage makes a real difference. This build has run with the actual AT&amp;T/Ericsson drone-detection demo clip in place of stock footage, which also happens to make Part Two's YOLO detector (Phase 09) something worth watching instead of a generic proof of concept. If you don't have a clip handy, a stand-in is one <code class="inline">wget</code> away:
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ &mdash; fallback stand-in clip</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>mkdir -p src
+sudo apt-get install -y unzip
+wget -O src/video.mp4.zip https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4.zip
+unzip -o -j src/video.mp4.zip -d src
+mv src/BigBuckBunny_320x180.mp4 src/video.mp4
+ls -la src/video.mp4   # confirm it's a real file, not 0 bytes</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ &mdash; either way, bring the stack up once the file is in place</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>docker compose up -d</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for</span>
+      Swapping the file in place later doesn't always reach an already-running <code class="inline">ffmpeg</code> process, which may hold an open handle to the old file's content rather than picking up the replacement. After replacing <code class="inline">src/video.mp4</code> on a stack that's already up, restart anything already reading it: <code class="inline">docker compose restart reader</code>, and re-launch the Phase 11C RTMP push if that's running too. If the clip's aspect ratio isn't 16:9, the Phase 11C push's <code class="inline">-vf scale=640:360</code> will stretch it &mdash; swap in a letterboxing filter (<code class="inline">scale=640:360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2</code>) if that matters for the audience.
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cat &lt;&lt;'EOF' &gt; docker-compose.yml
+services:
+  broker-b:
+    image: solace/solace-pubsub-standard
+    shm_size: 2gb
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 1048576
+        hard: 1048576
+    environment:
+      - username_admin_globalaccesslevel=admin
+      - username_admin_password=${BROKER_ADMIN_PASS}
+    ports:
+      - 55555:55555
+      - 8080:8080
+    volumes:
+      - broker-b-data:/var/lib/solace
+  sink_cascade:
+    depends_on:
+      - broker-b
+    image: paulusgunadi512/solace2rtsp:1.0.260915
+    environment:
+      - SOLACE_HOST=broker-b:55555
+      - SOLACE_VPN=default
+      - SOLACE_USERNAME=${VIDEO_DEMO_USER}
+      - SOLACE_PASSWORD=${VIDEO_DEMO_PASS}
+      - SERVER_PORT=8554
+      - MEDIA_MESSAGING_MODE=GUARANTEED_NON_DURABLE
+    ports:
+      - 8554:8554
+      - 8000:8000/udp
+      - 8001:8001/udp
+
+volumes:
+  broker-b-data:
+EOF
+docker compose up -d</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      <code class="inline">sink_cascade</code> connects to its own local Broker B, not across the link to Broker A &mdash; the bridge in Phase 04 is what carries the video across, not the sink's own connection. This is what makes the recovery real: everything the sink sees has already survived the shaped link once, inside Solace, before the sink ever touches it.
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for &mdash; disk space</span>
+      Both broker containers, plus every image this build pulls (mediamtx, ffmpeg, the cascades, and later <code class="inline">rtsp_bridge</code>), share the instance's root volume. A <code class="inline">docker pull</code> failing mid-layer with <code class="inline">no space left on device</code> is a real, recurring failure mode on the default 8&ndash;20&nbsp;GB root volumes &mdash; check with <code class="inline">df -h</code> and <code class="inline">docker system df</code> before troubleshooting anything else looks broken, and reclaim space with <code class="inline">docker image prune -a</code>. When a new pull isn't possible, an already-pulled image's binary can usually stand in for a diagnostic tool: <code class="inline">docker exec &lt;existing-container&gt; ffmpeg -i &lt;url&gt;</code> works for a codec check without pulling anything new (see Phase 11C).
+    </div>
+
+    <p>Give both brokers a minute to finish booting, then create the same client username on <strong>each</strong>:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ssh -L 8080:localhost:8080 ubuntu@&lt;source-public-ip&gt;      # Broker A's Manager
+ssh -L 8081:localhost:8080 ubuntu@&lt;receiver-public-ip&gt;    # Broker B's Manager, different local port</code></pre>
+    </div>
+
+    <ol class="steps">
+      <li>On each broker: Message VPN <code class="inline">default</code> &rarr; <strong>Client Usernames</strong> &rarr; create <code class="inline">${VIDEO_DEMO_USER}</code> / <code class="inline">${VIDEO_DEMO_PASS}</code> (values from your <code class="inline">.env</code>), enabled.</li>
+      <li>On each broker: also create <code class="inline">${BRIDGE_SVC_USER}</code> / <code class="inline">${BRIDGE_SVC_PASS}</code>, enabled &mdash; the bridge in Phase 04 authenticates as this on both sides, kept separate from <code class="inline">${VIDEO_DEMO_USER}</code> so the broker never mistakes the bridge for the cascade publishing on the same topic.</li>
+      <li>Confirm the default ACL profile permits publish and subscribe on <code class="inline">s/v/&gt;</code> (or scope to <code class="inline">s/v/c01/&gt;</code>) &mdash; usually already permissive on a fresh broker.</li>
+      <li>On <strong>Broker B only</strong>: open the Client Profile used by <code class="inline">video_demo</code> (usually <code class="inline">default</code>) and confirm <strong>Allow Guaranteed Message Receive</strong> and <strong>Allow Client to Create Endpoints</strong> are both enabled. <code class="inline">sink_cascade</code> creates its own non-durable queue on demand per RTSP session &mdash; it needs both to do that.</li>
+    </ol>
+  </section>
+
+  <!-- PHASE 04 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">04</span><span class="phase-title">The bridge</span></div>
+    <p class="phase-obj">One bridge, two directions: it carries the RTSP DESCRIBE request from the sink to the source and the reply back as Direct messages, and the video itself as a Guaranteed queue subscription. The sink's own Guaranteed queue, created in Phase 03, is what actually rides out the shaped link's loss once the video arrives.</p>
+
+    <div class="callout">
+      <span class="tag">Corrected in Rev. 5</span>
+      Earlier revisions of this manual put <code class="inline">s/v/c01/&gt;</code> under Incoming Direct alongside the handshake topics. That's not what was actually verified working: a live, end-to-end test this build only started passing video once <code class="inline">s/v/c01/&gt;</code> was moved to an <strong>Incoming Guaranteed</strong> subscription bound to a named queue. Follow the steps below, not the Direct-only version.
+    </div>
+
+    <p>On <strong>Broker A</strong>'s Manager (source): create the bridge that points at Broker B.</p>
+
+    <ol class="steps">
+      <li>Message VPN <code class="inline">default</code> &rarr; <strong>Bridges</strong> &rarr; Create Bridge. Name: <code class="inline">bridge-to-b</code>.</li>
+      <li>Remote broker address: <code class="inline">$IP_RCV_PRIV:55555</code> &mdash; the actual private IP, not a hostname. Remote message VPN: <code class="inline">default</code>. Credentials: <code class="inline">${BRIDGE_SVC_USER}</code> / <code class="inline">${BRIDGE_SVC_PASS}</code>.</li>
+      <li>Save, then open the bridge's <strong>Subscriptions</strong> tab &rarr; <strong>Incoming Direct</strong> &rarr; add <code class="inline">s/v/c01/desc</code>. This is the RTSP DESCRIBE request the sink publishes on Broker B; Broker A needs to receive its own copy to answer it.</li>
+    </ol>
+
+    <p>On <strong>Broker B</strong>'s Manager (receiver): create the mirror-image bridge that points back at Broker A.</p>
+
+    <ol class="steps">
+      <li>Message VPN <code class="inline">default</code> &rarr; <strong>Bridges</strong> &rarr; Create Bridge. Name: <code class="inline">bridge-to-a</code>.</li>
+      <li>Remote broker address: <code class="inline">$IP_SRC_PRIV:55555</code> &mdash; the actual private IP, not a hostname. Remote message VPN: <code class="inline">default</code>. Credentials: <code class="inline">${BRIDGE_SVC_USER}</code> / <code class="inline">${BRIDGE_SVC_PASS}</code>.</li>
+      <li>Save, then open the bridge's <strong>Subscriptions</strong> tab &rarr; <strong>Incoming Direct</strong> &rarr; add <code class="inline">#P2P/&gt;</code> (the reply the source sends back to the sink's own dynamically-generated reply topic).</li>
+      <li>Same bridge, <strong>Incoming Guaranteed</strong> tab &rarr; add subscription <code class="inline">s/v/c01/&gt;</code>, queue name <code class="inline">bridge2bQ</code>. This is the video and audio topic; carrying it Guaranteed instead of Direct is what actually survives the shaped link's loss.</li>
+      <li>Confirm both bridges show <strong>Up</strong> on their Summary tab, and specifically check the <strong>Details</strong> tab of each direction: a real remote address and a non-zero, growing uptime. A direction stuck at <code class="inline">Remote Address: 0.0.0.0:0</code> with <code class="inline">Uptime: 0d 0h 0m 0s</code> is not actually connected even if the Summary tab briefly shows Up.</li>
+    </ol>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      Use <code class="inline">#P2P/&gt;</code>, not the narrower router-specific reply topic Broker Manager may show under a live session &mdash; the router name a reply topic is scoped to is derived from the container's own id and changes every time <code class="inline">sink_cascade</code>'s container is recreated. The generic form keeps working across restarts.
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for</span>
+      Each of these topics should cross the bridge by exactly one mechanism &mdash; Direct or Guaranteed, never both. If a topic is reachable by two different paths across the same bridge, the far side receives two copies of every message, which surfaces as a stuck or stuttering picture on the sink even though delivery itself looks perfectly healthy on every broker statistic.
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for &mdash; the VPN address footgun</span>
+      Broker Manager can auto-populate a bridge's Remote Message VPN connection with an unresolvable internal virtual-router identifier that looks like <code class="inline">v:&lt;hash&gt;</code> instead of a real address. A bridge configured this way never actually connects, even though the UI may not make that obvious at a glance &mdash; the tell is the Details tab showing <code class="inline">0.0.0.0:0</code> and zero uptime. Fix it by explicitly setting the remote connection to the peer broker's real private IP, as in the steps above.
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note &mdash; transient endpoint error</span>
+      While a bridge direction is down, repeated failed RTSP handshake attempts can pile up temporary/non-durable endpoints faster than they expire, surfacing as <code class="inline">No More Non-Durable Queue or Topic Endpoint</code> in the logs. This is a symptom of the outage, not a separate bug &mdash; it clears on its own a few minutes after the bridge and handshake are actually working again.
+    </div>
+
+    <p>Confirm the handshake works end to end before moving on: on the receiver, run a quick RTSP probe against the sink and watch its logs.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>docker compose logs -f sink_cascade
+# in a second terminal:
+ffmpeg -rtsp_transport tcp -i rtsp://localhost:8554/c01 -c copy -f mpegts "udp://127.0.0.1:6004?pkt_size=1316"</code></pre>
+    </div>
+
+    <p>A clean run shows <code class="inline">describe request &rarr; session opened &rarr; setup request &rarr; play request</code> in the sink's logs, with no repeated timeouts.</p>
+  </section>
+
+  <!-- PHASE 05 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">05</span><span class="phase-title">Wire the comparison, view both</span></div>
+    <p class="phase-obj">The direct-UDP path and the bridged, Solace-carried RTSP path running side by side, viewed from the receiver.</p>
+
+    <table class="ports">
+      <tr><th>Path</th><th>Source emits to</th><th>Receiver serves / listens on</th></tr>
+      <tr><td>Direct UDP</td><td><code class="inline">udp://$IP_RCV_PRIV:5004</code></td><td><code class="inline">udp://0.0.0.0:5004</code></td></tr>
+      <tr><td>Via Solace</td><td>src_cascade &rarr; Broker A (local) &rarr; bridge &rarr; Broker B</td><td><code class="inline">rtsp://localhost:8554/c01</code>, from sink_cascade on the receiver itself</td></tr>
+    </table>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      The receiver is a headless EC2 instance. Install <a href="https://www.xquartz.org">XQuartz</a> on your Mac, then use X11 forwarding for each viewer terminal: <code class="inline">ssh -Y -i ~/Downloads/your-key.pem ubuntu@&lt;receiver-public-ip&gt;</code>. Use VLC (<code class="inline">cvlc --vout=x11 ...</code>) rather than <code class="inline">ffplay</code> for display &mdash; <code class="inline">ffplay</code>'s SDL2 renderer needs a GLX context XQuartz doesn't reliably provide over forwarded X11.
+    </div>
+
+    <p><strong>Receiver</strong> &mdash; bring up both viewers, each in its own <code class="inline">ssh -Y</code> session:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ (terminal 1, ssh -Y)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cvlc --vout=x11 udp://@:5004   # Direct UDP window</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      Ubuntu's apt-packaged VLC has no <code class="inline">rtsp://</code> client support, so relay RTSP to local UDP with <code class="inline">ffmpeg</code> first, then view the UDP with <code class="inline">cvlc</code>, same as the Direct UDP window.
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ (terminal 2, ssh -Y)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ffmpeg -rtsp_transport tcp -i rtsp://localhost:8554/c01 -c copy -f mpegts "udp://127.0.0.1:6004?pkt_size=1316"</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ (terminal 3, ssh -Y)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cvlc --vout=x11 udp://@:6004   # Via Solace window &mdash; note the colon before the port</code></pre>
+    </div>
+
+    <p>Drag the windows side by side and label them &mdash; "Direct UDP" and "Via Solace" &mdash; before anyone's watching. The Via Solace path needs three terminals on the receiver: the <code class="inline">ffmpeg</code> relay (leave it in the foreground), the <code class="inline">cvlc</code> viewer, and whatever's running your commands.</p>
+
+    <p><strong>Source</strong> &mdash; the RTSP server, reader, broker-a, and src_cascade are already up from Phase 03; start only the direct-UDP comparison stream:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export IP_RCV_PRIV=10.0.3.x   # from Phase 00's table, if this session doesn't have it yet
+ffmpeg -re -stream_loop -1 -i src/video.mp4 -an -c:v libx264 -preset veryfast \
+  -tune zerolatency -b:v 200k -f mpegts "udp://$IP_RCV_PRIV:5004?pkt_size=1316"</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      Keep <code class="inline">?pkt_size=1316</code> on every UDP output in this build. Without it, <code class="inline">ffmpeg</code> sends packets larger than VLC's MPEG-TS demuxer expects, which VLC truncates rather than rejects &mdash; corrupting continuity counters and producing decode errors that have nothing to do with the shaping in Phase 02.
+    </div>
+
+    <p>Confirm both windows play clean before touching <code class="inline">iperf3</code> &mdash; if either isn't smooth here, the comparison in Phase 06 won't read clearly.</p>
+  </section>
+
+  <!-- PHASE 06 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">06</span><span class="phase-title">Inject &amp; compare</span></div>
+    <p class="phase-obj">One flood, started once, hits both pipelines at the same instant &mdash; that simultaneity is the whole argument.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>iperf3 -s</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ (new terminal)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export IP_RCV_PRIV=10.0.3.x   # from Phase 00's table, if this session doesn't have it yet
+# 10 Mbps against a 768 kbit ceiling &mdash; well past both video streams combined
+iperf3 -c $IP_RCV_PRIV -u -b 10M -t 300</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export IFACE=$(ip -o -4 route show to default | awk '{print $5}')   # if this session doesn't have it yet
+watch -n1 "tc -s qdisc show dev $IFACE"</code></pre>
+    </div>
+
+    <p>The <strong>Direct UDP</strong> window stalls and stays broken &mdash; those frames are gone for good. The <strong>Via Solace</strong> window stalls too, in real time, then catches up with a burst of held frames once the flood stops &mdash; the sink's non-durable queue on Broker B holds what the bridge delivers late rather than dropping it. Watch that queue's Consumers tab in Broker B's Manager during the flood to see delivery continue climbing even while the picture itself is stalled.</p>
+  </section>
+
+  <!-- PHASE 07 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">07</span><span class="phase-title">Rehearse &amp; tear down</span></div>
+    <p class="phase-obj">Run it twice end to end before anyone's watching, then know exactly how to shut off the whole stack.</p>
+
+    <p><strong>Go / no-go, before you present:</strong></p>
+    <ul class="checklist">
+      <li>Both cascades' logs show a clean broker connection, not auth/ACL errors</li>
+      <li>Both bridges show Up on their respective Summary tabs</li>
+      <li>A test RTSP probe completes describe/session/setup/play with no timeouts</li>
+      <li>Both windows play clean, side by side, with nothing else running</li>
+      <li>10 Mbps flood visibly freezes the Direct window every time</li>
+      <li>Via-Solace window stalls, then visibly catches up once the flood stops &mdash; confirm this once live rather than assuming it from the mechanism alone</li>
+      <li><code class="inline">tc</code> rules re-applied if the shaper was stopped/started since Phase 02</li>
+      <li>Recorded a clean backup run, in case the live link misbehaves in front of the audience</li>
+    </ul>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>pkill -f "ffmpeg.*5004"   # stops the direct-UDP comparison stream only
+docker compose down</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>pkill -f vlc
+pkill -f "ffmpeg -rtsp_transport"   # the RTSP-relay process, not the source's ffmpeg
+docker compose down</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># Stop paying for compute without losing the setup (good for an overnight pause)
+aws ec2 stop-instances --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV --region $AWS_REGION
+
+# Full teardown once the demo is done
+aws ec2 terminate-instances --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV --region $AWS_REGION
+aws ec2 wait instance-terminated --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV --region $AWS_REGION
+aws ec2 delete-security-group --group-id $SG_ID --region $AWS_REGION
+# subnets first: a route table can't be deleted while still associated with one
+for sn in $SUBNET_SRC $SUBNET_SHAPE $SUBNET_RCV; do aws ec2 delete-subnet --subnet-id $sn --region $AWS_REGION; done
+for rtb in $RTB_SRC $RTB_SHAPE $RTB_RCV; do aws ec2 delete-route-table --route-table-id $rtb --region $AWS_REGION; done
+aws ec2 detach-internet-gateway --internet-gateway-id $IGW_ID --vpc-id $VPC_ID --region $AWS_REGION
+aws ec2 delete-internet-gateway --internet-gateway-id $IGW_ID --region $AWS_REGION
+aws ec2 delete-vpc --vpc-id $VPC_ID --region $AWS_REGION</code></pre>
+    </div>
+  </section>
+
+  <div class="part-divider">
+    <div class="part-num">II</div>
+    <div>
+      <div class="part-label">Optional Extension &middot; Build only if Part One is solid</div>
+      <h2 class="part-title">Drone Detection</h2>
+      <p class="part-dek">Real-time object detection running directly against the resilient feed &mdash; a GPU instance in the receiver's subnet reads sink_cascade's own RTSP output and draws live bounding boxes, the same feed the "Via Solace" viewer is watching.</p>
+    </div>
+  </div>
+
+  <figure class="diagram">
+    <span class="fig-label">Diagram 2 &mdash; with drone detection</span>
+    <svg viewBox="0 0 900 560" role="img" aria-label="Same topology as diagram one, with a GPU instance added to the receiver subnet. It reads sink_cascade's RTSP output over TCP, runs a YOLO model, and displays live bounding boxes.">
+      <defs>
+        <marker id="db1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><polygon points="0,0 7,3 0,6" fill="currentColor"/></marker>
+        <marker id="db2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><polygon points="0,0 7,3 0,6" style="fill:var(--accent)"/></marker>
+      </defs>
+
+      <rect x="10" y="15" width="270" height="440" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>
+      <text x="145" y="10" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" letter-spacing="0.08em" fill="currentColor" opacity="0.75">SOURCE SUBNET</text>
+
+      <rect x="35" y="115" width="220" height="40" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="132" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">RTSP source</text>
+      <text x="145" y="147" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" fill="currentColor" opacity="0.75">mediamtx + reader</text>
+
+      <line x1="145" y1="155" x2="145" y2="178" stroke="currentColor" stroke-width="1.1" marker-end="url(#db1)"/>
+
+      <rect x="35" y="180" width="220" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="201" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">src_cascade</text>
+
+      <line x1="145" y1="214" x2="145" y2="248" stroke="currentColor" stroke-width="1.1" marker-end="url(#db1)"/>
+
+      <rect x="35" y="250" width="220" height="46" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="270" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" font-weight="600" fill="currentColor">Broker A</text>
+      <text x="145" y="285" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" fill="currentColor" opacity="0.75">bridge object bridge-to-b</text>
+
+      <rect x="370" y="15" width="200" height="410" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <text x="470" y="10" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" font-weight="600" fill="currentColor">SHAPER</text>
+
+      <line x1="257" y1="273" x2="403" y2="232" stroke="currentColor" stroke-width="1.2" style="stroke:var(--accent)" marker-end="url(#db2)"/>
+      <line x1="403" y1="222" x2="257" y2="278" stroke="currentColor" stroke-width="1.2" style="stroke:var(--accent)" marker-end="url(#db2)"/>
+      <text x="330" y="255" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" font-weight="600" style="fill:var(--accent)">SMF bridge</text>
+
+      <line x1="497" y1="222" x2="608" y2="270" stroke="currentColor" stroke-width="1.2" style="stroke:var(--accent)" marker-end="url(#db2)"/>
+      <line x1="608" y1="290" x2="497" y2="232" stroke="currentColor" stroke-width="1.2" style="stroke:var(--accent)" marker-end="url(#db2)"/>
+
+      <rect x="610" y="15" width="270" height="530" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>
+      <text x="745" y="10" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" letter-spacing="0.08em" fill="currentColor" opacity="0.75">RECEIVER SUBNET</text>
+
+      <rect x="625" y="255" width="240" height="46" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="745" y="275" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" font-weight="600" fill="currentColor">Broker B</text>
+      <text x="745" y="290" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" fill="currentColor" opacity="0.75">bridge object bridge-to-a</text>
+
+      <line x1="745" y1="301" x2="745" y2="320" stroke="currentColor" stroke-width="1.1" marker-end="url(#db1)"/>
+      <rect x="625" y="322" width="240" height="40" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="745" y="341" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">sink_cascade</text>
+      <text x="745" y="355" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="currentColor" opacity="0.75">rtsp://&hellip;:8554/c01</text>
+
+      <line x1="745" y1="362" x2="745" y2="381" stroke="currentColor" stroke-width="1.1" marker-end="url(#db1)"/>
+      <rect x="625" y="383" width="240" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="745" y="404" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="currentColor">Via Solace viewer</text>
+
+      <line x1="800" y1="383" x2="800" y2="450" stroke="currentColor" stroke-width="1.1" style="stroke:var(--accent)" marker-end="url(#db2)"/>
+      <text x="825" y="425" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="currentColor" opacity="0.75" transform="rotate(90 825 425)">RTSP :8554 (TCP)</text>
+
+      <rect x="625" y="452" width="240" height="60" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="745" y="474" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" font-weight="600" fill="currentColor">Drone-detection instance</text>
+      <text x="745" y="490" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" fill="currentColor" opacity="0.75">g4dn.xlarge &middot; Ultralytics YOLOv11x</text>
+      <text x="745" y="503" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9.5" fill="currentColor" opacity="0.75">live bounding-box window over X11</text>
+    </svg>
+    <figcaption>The drone-detection instance is an ordinary RTSP-over-TCP client of <code class="inline">sink_cascade</code>'s own output &mdash; it never talks to Solace directly. Everything it sees has already been carried across the shaped link by the bridge and the sink's Guaranteed queue, so its input keeps flowing under the same congestion that would otherwise stall it.</figcaption>
+  </figure>
+
+  <!-- PHASE 08 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">08</span><span class="phase-title">Provision &amp; connect</span></div>
+    <p class="phase-obj">A GPU instance in the receiver's subnet, with just enough network access to read sink_cascade's RTSP output.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># Reuse the receiver's own subnet and security group &mdash; simplest path, no extra routing
+aws ec2 describe-instances --instance-ids $INSTANCE_RCV \
+  --query "Reservations[].Instances[].[VpcId,SubnetId,SecurityGroups]" --region $AWS_REGION
+
+export AMI_GPU=$(aws ssm get-parameter --region $AWS_REGION \
+  --name /aws/service/deeplearning/ami/x86_64/oss-nvidia-driver-gpu-pytorch-2.7-ubuntu-22.04/latest/ami-id \
+  --query "Parameter.Value" --output text)
+
+aws ec2 run-instances \
+  --image-id $AMI_GPU \
+  --instance-type g4dn.xlarge \
+  --key-name $KEY_NAME \
+  --subnet-id $SUBNET_RCV \
+  --security-group-ids $SG_ID \
+  --associate-public-ip-address \
+  --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":100,"VolumeType":"gp3"}}]' \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=drone-detect-gpu}]' \
+  --region $AWS_REGION</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      Reusing the receiver's own security group means the drone-detection instance can already reach <code class="inline">sink_cascade</code>'s RTSP port with no extra rule &mdash; this build's demo security group permits all traffic within the VPC's own CIDR. If yours is scoped tighter, add an inbound rule on the receiver's security group for TCP 8554 from the new instance's security group.
+    </div>
+
+    <p>The Deep Learning AMI ships NVIDIA drivers and a pre-built PyTorch environment already installed. Confirm both once connected:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">drone-detect $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>nvidia-smi
+source /opt/pytorch/bin/activate
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      The first <code class="inline">import torch</code> on a freshly-booted instance can take 15&ndash;30 seconds &mdash; it's loading large CUDA shared libraries from a cold disk cache, not hanging. Subsequent imports are fast.
+    </div>
+  </section>
+
+  <!-- PHASE 09 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">09</span><span class="phase-title">Detect</span></div>
+    <p class="phase-obj">A single-class YOLOv11x model, pretrained specifically for drone detection, reading the RTSP feed directly.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">drone-detect $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>source /opt/pytorch/bin/activate
+pip install ultralytics
+mkdir ~/drone-detect && cd ~/drone-detect
+wget -O best.pt "https://huggingface.co/doguilmak/Drone-Detection-YOLOv11x/resolve/main/weight/best.pt?download=true"</code></pre>
+    </div>
+
+    <p>Console-only version &mdash; logs a confidence score per detection, no display needed:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">drone-detect $ &mdash; detect_drone.py</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cat &gt; detect_drone.py &lt;&lt;'EOF'
+import os
+os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp"
+
+from ultralytics import YOLO
+
+model = YOLO("best.pt")
+
+results = model.predict(
+    source="rtsp://<receiver-private-ip>:8554/c01",
+    conf=0.3,
+    stream=True,
+    verbose=False,
+    device=0,
+)
+
+for r in results:
+    if len(r.boxes) > 0:
+        confs = [round(c, 2) for c in r.boxes.conf.tolist()]
+        print(f"DRONE DETECTED — confidence: {confs}")
+        r.save(filename="last_detection.jpg")
+EOF
+python detect_drone.py</code></pre>
+    </div>
+
+    <p>Live-window version, with bounding boxes drawn on the feed &mdash; needs <code class="inline">ssh -Y</code> the same way the video viewers in Phase 05 do:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ssh -Y -i ~/Downloads/your-key.pem ubuntu@&lt;drone-detect-public-ip&gt;
+sudo apt-get install -y xauth x11-apps   # once per instance</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">drone-detect $ &mdash; detect_drone_live.py</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cat &gt; detect_drone_live.py &lt;&lt;'EOF'
+import os
+os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp"
+
+import cv2
+from ultralytics import YOLO
+
+model = YOLO("best.pt")
+RTSP_URL = "rtsp://<receiver-private-ip>:8554/c01"
+PROCESS_EVERY_N = 1
+
+cap = cv2.VideoCapture(RTSP_URL)
+if not cap.isOpened():
+    raise RuntimeError("Could not open RTSP stream")
+
+cv2.namedWindow("Drone Detection", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("Drone Detection", 640, 360)
+
+frame_count = 0
+last_annotated = None
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("Stream dropped, reconnecting...")
+        cap.release()
+        cap = cv2.VideoCapture(RTSP_URL)
+        continue
+
+    frame_count += 1
+    if frame_count % PROCESS_EVERY_N == 0:
+        results = model.predict(frame, conf=0.3, verbose=False, device=0)
+        last_annotated = results[0].plot()
+        if len(results[0].boxes) > 0:
+            confs = [round(c, 2) for c in results[0].boxes.conf.tolist()]
+            print(f"DRONE DETECTED — confidence: {confs}")
+
+    cv2.imshow("Drone Detection", last_annotated if last_annotated is not None else frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+EOF
+python detect_drone_live.py</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      This is a single-class model trained on roughly 1,350 images &mdash; treat it as a solid proof of concept, not a production detector. Raise <code class="inline">conf</code> (0.3 &rarr; 0.5 or higher) if it's flagging small, non-drone objects; real drone detections in testing consistently scored well above that.
+    </div>
+
+    <div class="callout">
+      <span class="tag">What success looks like</span>
+      With Phase 02's shaping and Phase 06's flood both active, this window degrades the same way the "Via Solace" viewer does &mdash; lag and occasional stale frames, not lost video &mdash; because it's reading the same resilient feed. Point the flood at the shaped link (not at this instance's own network path) to see that: this instance's connection to the receiver is a separate, unshaped hop, so congestion has to be on the source&harr;receiver link to actually demonstrate the resilience story here.
+    </div>
+  </section>
+
+  <!-- PHASE 10 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">10</span><span class="phase-title">Tear down Part Two</span></div>
+    <p class="phase-obj">One extra instance to release; everything else was already covered by Phase 07.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export INSTANCE_GPU=i-xxxxxxxxxxxxxxxxx
+aws ec2 terminate-instances --instance-ids $INSTANCE_GPU --region $AWS_REGION</code></pre>
+    </div>
+
+    <p>No separate security group or subnet to clean up &mdash; this reused the receiver's existing ones.</p>
+  </section>
+
+  <div class="part-divider">
+    <div class="part-num">III</div>
+    <div>
+      <div class="part-label">Optional Extension &middot; Independent of Part Two</div>
+      <h2 class="part-title">Sensor Fusion</h2>
+      <p class="part-dek">AT&amp;T and Ericsson demonstrated 5G radios detecting and tracking drones by reading the radio signal itself &mdash; no separate sensor hardware. The output is small, high-value telemetry from multiple sites feeding a fusion point, over exactly the kind of contested backhaul this whole build has been shaping. Same link, same bridge, alerts instead of video &mdash; now viewed on a live, Solace-branded fusion map with geofencing and clickable camera markers, rather than a scrolling terminal.</p>
+    </div>
+  </div>
+
+  <!-- PHASE 11 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">11</span><span class="phase-title">Track generator + fusion viewer</span></div>
+    <p class="phase-obj">A stand-in for one or more sensing sites: a script publishing small JSON track updates over MQTT, simulating a single drone that is only reported while at least one nearby "camera" currently has it in range &mdash; the same AT&amp;T/Ericsson network-senses-the-drone story from the Part III divider, whether that camera is a fixed install or, just as plausibly, someone's phone on the carrier network. No new SDKs &mdash; Solace brokers speak MQTT natively.</p>
+
+    <div class="callout">
+      <span class="tag">Updated this session</span>
+      Earlier versions of this script leashed the drone to a single fixed camera position. It's replaced below with a small roster of camera sites (three by default, auto-scattered around the start position, or your own custom list): the drone roams across their combined coverage, and whichever camera currently has it in range publishes under its own name as <code class="inline">site</code> &mdash; a handoff &mdash; while <code class="inline">track_id</code> stays constant throughout. If no camera currently covers it, nothing is published that tick; that gap is intentional, not a bug. If a host is still running an older version of this script, kill it (<code class="inline">pkill -f track_gen.sh</code>) and copy the new one over before continuing.
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source + receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo apt-get install -y mosquitto-clients python3</code></pre>
+    </div>
+
+    <p>MQTT needs its own exposed port on both brokers. Add it to each compose file and bring the stacks back up:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ &mdash; add to broker-a's ports:</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>      - 1883:1883</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ &mdash; add to broker-b's ports:</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>      - 1883:1883
+      - 8000:8000</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Why 8000 on the receiver too</span>
+      Port 1883 is plain MQTT, fine for <code class="inline">mosquitto_pub</code>/<code class="inline">mosquitto_sub</code> from a terminal. The live browser map in Phase 11B connects with MQTT-over-WebSockets instead, since a browser page can't open a raw TCP socket &mdash; that's Solace's <code class="inline">8000</code> service, and it only needs exposing on the broker the map's browser session actually reaches (Broker B, via the SSH tunnel in Phase 11B).
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source + receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>docker compose up -d</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ &mdash; track_gen.sh</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cat &lt;&lt;'EOF' &gt; track_gen.sh
+#!/usr/bin/env bash
+# track_gen.sh — simulated sensor/track publisher. A single drone roams across
+# the combined coverage area of one or more "camera" sites — stand-ins for
+# anything from a fixed CCTV camera to someone's phone on a carrier network
+# filming the sky — and is only reported while at least one of them currently
+# has it in range. As the drone moves between sites' coverage, the reporting
+# `site` in the topic changes (a handoff) while `track_id` stays constant the
+# whole time, and the drone can go briefly unreported in the gaps between
+# coverage zones — no retained messages or special broker config required.
+#
+# Env vars (all optional, defaults shown):
+#   SITE       site1        used only to name the DEFAULT camera roster below;
+#                            ignored if CAMERAS is set explicitly
+#   TRACK_ID   trk-042      track id, included in the JSON payload — constant
+#                            across the whole run regardless of which camera
+#                            is currently reporting it
+#   LAT        32.7473      starting/roaming-center latitude (decimal degrees)
+#   LON        -97.0945     starting/roaming-center longitude (decimal degrees)
+#   ALT        450          starting altitude, meters
+#   CAMERAS    (see below)  camera roster as a Python literal list of
+#                            (name, lat, lon, range_m) tuples. Defaults to
+#                            three points scattered ~1-1.5km around LAT/LON,
+#                            each with an 800m detection range, so a default
+#                            run already demonstrates handoffs and coverage
+#                            gaps. Example custom roster:
+#                            CAMERAS="[('phone-1',32.7473,-97.0945,600),('phone-2',32.7540,-97.1020,900)]"
+#   MARGIN_M   500          how far past the outermost camera's own coverage
+#                            edge the drone is still allowed to roam before
+#                            being steered back toward the roster's centroid
+#   CELL       0.01         geo-cell size in degrees — MUST match the map's
+#                            Cell Size field exactly or the geofence won't
+#                            catch this track
+#   BROKER     localhost    MQTT broker host
+#   PORT       1883         MQTT broker port
+#   RATE       1            publish interval, seconds (also the simulation
+#                            step interval)
+#
+# Publishes to: sensor/track/<reporting-camera>/cell/<latIdx>/<lonIdx>
+#   Nothing is published for a step where no camera currently covers the
+#   drone — the map's own dead-track pruning shows that as the track going
+#   stale, then reappearing once a camera picks it back up.
+
+set -euo pipefail
+
+SITE="${SITE:-site1}"
+TRACK_ID="${TRACK_ID:-trk-042}"
+LAT="${LAT:-32.7473}"
+LON="${LON:--97.0945}"
+ALT="${ALT:-450}"
+CAMERAS="${CAMERAS:-}"
+MARGIN_M="${MARGIN_M:-500}"
+CELL="${CELL:-0.01}"
+BROKER="${BROKER:-localhost}"
+PORT="${PORT:-1883}"
+RATE="${RATE:-1}"
+
+echo "track_gen: track=$TRACK_ID roam-center=($LAT,$LON) cell=$CELL -> $BROKER:$PORT"
+
+SITE="$SITE" TRACK_ID="$TRACK_ID" LAT="$LAT" LON="$LON" ALT="$ALT" \
+CAMERAS="$CAMERAS" MARGIN_M="$MARGIN_M" CELL="$CELL" \
+BROKER="$BROKER" PORT="$PORT" RATE="$RATE" \
+python3 - <<'PYEOF'
+import os, math, random, subprocess, datetime, ast, sys, time
+
+SITE = os.environ["SITE"]; TRACK_ID = os.environ["TRACK_ID"]
+LAT = float(os.environ["LAT"]); LON = float(os.environ["LON"])
+ALT = float(os.environ["ALT"]); MARGIN_M = float(os.environ["MARGIN_M"])
+CELL = float(os.environ["CELL"]); BROKER = os.environ["BROKER"]
+PORT = os.environ["PORT"]; RATE = float(os.environ["RATE"])
+
+cameras_raw = os.environ.get("CAMERAS", "").strip()
+if cameras_raw:
+    cameras = ast.literal_eval(cameras_raw)
+else:
+    cameras = [
+        (SITE + "-cam1", LAT, LON, 800.0),
+        (SITE + "-cam2", round(LAT + 0.0070, 6), round(LON - 0.0080, 6), 800.0),
+        (SITE + "-cam3", round(LAT - 0.0060, 6), round(LON + 0.0090, 6), 800.0),
+    ]
+
+def meters(lat_a, lon_a, lat_b, lon_b):
+    dlat_m = (lat_a - lat_b) * 111320.0
+    dlon_m = (lon_a - lon_b) * 111320.0 * math.cos(math.radians(lat_b))
+    return math.hypot(dlat_m, dlon_m)
+
+centroid_lat = sum(c[1] for c in cameras) / len(cameras)
+centroid_lon = sum(c[2] for c in cameras) / len(cameras)
+operating_radius = max(meters(c[1], c[2], centroid_lat, centroid_lon) + c[3] for c in cameras) + MARGIN_M
+
+print("track_gen: %d camera(s) in roster, roaming radius ~%.0fm around (%.5f, %.5f)" % (
+    len(cameras), operating_radius, centroid_lat, centroid_lon), file=sys.stderr)
+for c in cameras:
+    print("  camera %-16s (%.5f, %.5f) range %.0fm" % (c[0], c[1], c[2], c[3]), file=sys.stderr)
+
+lat, lon = LAT, LON
+heading = random.uniform(0, 360)
+speed = random.uniform(15, 40)
+
+while True:
+    heading = (heading + random.uniform(-8, 8)) % 360
+    speed = max(5, min(60, speed + random.uniform(-2, 2)))
+
+    dist_from_centroid = meters(lat, lon, centroid_lat, centroid_lon)
+    if dist_from_centroid > operating_radius:
+        east = -(lon - centroid_lon) * math.cos(math.radians(centroid_lat))
+        north = -(lat - centroid_lat)
+        bearing_home = math.degrees(math.atan2(east, north)) % 360
+        heading = (bearing_home + random.uniform(-20, 20)) % 360
+
+    dist_deg = speed * RATE * 0.00003
+    dlat = dist_deg * math.cos(math.radians(heading))
+    dlon = dist_deg * math.sin(math.radians(heading)) / math.cos(math.radians(lat))
+    lat = round(lat + dlat, 7)
+    lon = round(lon + dlon, 7)
+
+    covering = None; best_dist = None
+    for (name, clat, clon, crange) in cameras:
+        d = meters(lat, lon, clat, clon)
+        if d <= crange and (best_dist is None or d < best_dist):
+            covering = (name, clat, clon); best_dist = d
+
+    lat_idx = math.floor(lat / CELL); lon_idx = math.floor(lon / CELL)
+    ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    confidence = round(random.uniform(0.75, 0.99), 2)
+
+    if covering is None:
+        print("-- no camera in range, drone unreported this tick")
+    else:
+        cam_name, cam_lat, cam_lon = covering
+        payload = (
+            '{"site":"%s","track_id":"%s","lat":%s,"lon":%s,'
+            '"home_lat":%s,"home_lon":%s,"alt_m":%s,"speed_mps":%s,'
+            '"heading_deg":%s,"confidence":%s,"ts":"%s"}'
+        ) % (cam_name, TRACK_ID, lat, lon, cam_lat, cam_lon, ALT, speed, heading, confidence, ts)
+        topic = "sensor/track/%s/cell/%d/%d" % (cam_name, lat_idx, lon_idx)
+        subprocess.run(["mosquitto_pub", "-h", BROKER, "-p", PORT, "-t", topic, "-m", payload], check=True)
+        print("-> %s  %s" % (topic, payload))
+
+    time.sleep(RATE)
+PYEOF
+EOF
+chmod +x track_gen.sh
+./track_gen.sh
+# for a second, independent drone/roster from the same host, in another terminal:
+# SITE=bravo TRACK_ID=trk-108 LAT=32.7900 LON=-97.1400 ./track_gen.sh</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">The one rule that matters</span>
+      <code class="inline">CELL</code> here and the live map's Cell Size field (Phase 11B) must be <strong>exactly</strong> equal, not approximately. Both sides compute a cell index as <code class="inline">floor(coordinate / CELL)</code>; even a small mismatch (say, <code class="inline">0.01</code> here vs. <code class="inline">0.01016</code> on the map) produces a completely different index for nearly every coordinate, not just at the edges &mdash; it reads as "the geofence loses the track" when the actual cause is two sides doing the same math with two different numbers. Default <code class="inline">0.01</code> on both ends unless you have a specific reason to change it.
+    </div>
+
+    <div class="callout">
+      <span class="tag">Why no retained camera roster</span>
+      A cleaner design would have each camera announce itself once via a retained MQTT message, so every camera pin shows up on the map immediately on connect. That needs retained-message support enabled on the Solace side, which this build doesn't turn on. Instead, a camera simply appears on the map the same way a track always has &mdash; by publishing &mdash; the moment it actually has something to report. That also happens to fit the cover story better: a witness's phone isn't a pre-registered sensor, it only "exists" to the fusion picture the moment it captures something.
+    </div>
+
+    <p>A bare command-line viewer still works for a quick sanity check, and is what earlier revisions used as the fusion viewer:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ &mdash; bare fusion viewer</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># MQTT's multi-level wildcard is # , not Solace's native &gt;
+mosquitto_sub -h localhost -p 1883 -t "sensor/track/#" -v</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      MQTT is published with the client library's default QoS here deliberately &mdash; the fire-and-forget equivalent of <code class="inline">src_cascade</code>'s Direct publish, protected across the bridge the same way in Phase 12. Check MQTT is listed as an enabled service on the broker's <code class="inline">default</code> Message VPN if <code class="inline">mosquitto_pub</code> can't connect &mdash; it isn't always on by default the way SMF is.
+    </div>
+
+    <p>For an actual demo, use the live map in Phase 11B instead of the bare subscriber above &mdash; it's the same underlying topic data, rendered as tracks on a map with geofencing and camera markers rather than a scrolling terminal.</p>
+  </section>
+
+  <!-- PHASE 11B -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">11B</span><span class="phase-title">Live fusion map</span></div>
+    <p class="phase-obj">A Solace-branded browser page that subscribes to the cell-topic scheme from Phase 11 directly, plots every active track on a live map, lets you draw a geofence to filter what it subscribes to, and gives each simulated site a clickable camera marker.</p>
+
+    <p>This is a single self-contained HTML file, <code class="inline">track-fusion-map.html</code>, opened locally in a browser (<code class="inline">file://&hellip;</code>) &mdash; no server or build step. It uses Leaflet with Esri's World Dark Gray basemap, the Leaflet.draw plugin for geofencing, and MQTT.js over WebSockets to talk to the broker directly from the page.</p>
+
+    <ol class="steps">
+      <li>Tunnel Broker B's WebSocket port and Manager port from local, alongside whatever Part One/Two ports are already forwarded: <code class="inline">ssh -L 8081:localhost:8080 -L 8000:localhost:8000 ubuntu@&lt;receiver-public-ip&gt;</code>.</li>
+      <li>Open <code class="inline">track-fusion-map.html</code>. In the Geo Filtering panel, set Host to <code class="inline">localhost</code>, Port to <code class="inline">8000</code>, and Topic to <code class="inline">sensor/track/#</code>, then Connect.</li>
+      <li>Set Cell Size to the same value every running <code class="inline">track_gen.sh</code> instance is using for <code class="inline">CELL</code> (default <code class="inline">0.01</code> on both) &mdash; see the callout in Phase 11.</li>
+      <li>Start one or more <code class="inline">track_gen.sh</code> instances on the source (different <code class="inline">SITE</code>/<code class="inline">TRACK_ID</code> per instance); each appears as its own colored track with an age-based legend entry.</li>
+    </ol>
+
+    <p><strong>Geofencing:</strong> use Add Circle / Add Polygon / Add Rect to draw a shape on the map. The page computes which geo-cells overlap the shape, subscribes only to those cells' topics (capped by the Max Subs slider), and reports a Coverage Accuracy percentage from sub-sampling each included cell. Remove Filters returns to the unfiltered <code class="inline">sensor/track/#</code> subscription. A track that leaves the drawn shape is filtered out within a few seconds by the automatic dead-track pruning (stale after 3s, removed from the map after 10s of no updates) &mdash; there's no indefinite ghost marker left behind.</p>
+
+    <p><strong>Camera markers:</strong> the first message received for a given <code class="inline">site</code> drops a fixed camera-icon marker at that track's position (it never moves afterward, standing in for a real installed camera). Clicking it opens the video panel described in Phase 11C.</p>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      The camera-to-video mapping is deliberately faked for this demo: only one real video pipeline exists (Phases 00&ndash;07), so every camera marker opens the same live feed regardless of which simulated site it belongs to. The point being demonstrated is the click-a-marker-see-the-feed interaction, not per-site video routing.
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for</span>
+      A page opened via <code class="inline">file://</code> can't make cross-origin <code class="inline">fetch</code>/XHR calls to <code class="inline">http://&hellip;</code> endpoints (browser CORS policy) &mdash; this is why the video panel in Phase 11C uses an <code class="inline">&lt;iframe&gt;</code> pointed at the video server's own page rather than fetching a video manifest into a <code class="inline">&lt;video&gt;</code> element with a JS player library.
+    </div>
+  </section>
+
+  <!-- PHASE 11C -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">11C</span><span class="phase-title">RTSP-to-browser video bridge</span></div>
+    <p class="phase-obj">A small MediaMTX instance on the receiver that re-serves the video feed in a form a browser can actually play, so the map's camera markers in Phase 11B have something real to open.</p>
+
+    <p>Add a fourth service, <code class="inline">rtsp_bridge</code>, to the receiver's compose file, alongside <code class="inline">broker-b</code> and <code class="inline">sink_cascade</code>:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ &mdash; add to docker-compose.yml</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>  rtsp_bridge:
+    image: bluenviron/mediamtx:latest
+    restart: unless-stopped
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml:ro
+    ports:
+      - 8888:8888
+      - 1935:1935
+    depends_on:
+      - sink_cascade</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ &mdash; mediamtx.yml</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cat &lt;&lt;'EOF' &gt; mediamtx.yml
+paths:
+  c01:
+EOF
+docker compose up -d</code></pre>
+    </div>
+
+    <p>An empty path block accepts a push (RTSP ANNOUNCE, or RTMP on 1935) rather than pulling from a source URL. Port 8888 serves MediaMTX's own built-in HLS viewer page at <code class="inline">http://&hellip;:8888/c01</code> &mdash; that page is what the map's video panel embeds in an <code class="inline">&lt;iframe&gt;</code>.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $ &mdash; extend the tunnel from Phase 11B</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ssh -L 8081:localhost:8080 -L 8000:localhost:8000 -L 8888:localhost:8888 ubuntu@&lt;receiver-public-ip&gt;</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">What actually feeds it, and why</span>
+      The straightforward design &mdash; point <code class="inline">rtsp_bridge</code> at <code class="inline">rtsp://sink_cascade:8554/c01</code> and let MediaMTX pull it &mdash; does connect, but the resulting browser video is audio-only with a black picture. Tracing it with <code class="inline">ffmpeg -i</code> (reusing an already-pulled container's binary via <code class="inline">docker exec</code> rather than pulling a new image, per the Phase 03 disk-space callout) shows the video track reports as <code class="inline">mpeg4 (Simple Profile)</code> at every point in the pipeline &mdash; even the original pre-Solace <code class="inline">rtsp://server:8554/mystream</code> &mdash; despite the source <code class="inline">ffmpeg</code> command explicitly encoding H.264 (<code class="inline">-c:v libx264</code>). This is a pre-existing mislabeling in the legacy UDP-to-RTSP repackaging from Phase 00, unrelated to Solace or either cascade; browsers can't decode old MPEG-4 Part 2, while VLC and <code class="inline">ffplay</code> silently tolerate it, which is why it was never noticed before this feature needed browser playback.
+    </div>
+
+    <p>The workaround used here bypasses that chain entirely: push a fresh, correctly-encoded feed directly into <code class="inline">rtsp_bridge</code> over RTMP, reusing the source's already-running <code class="inline">reader</code> container so nothing new has to be pulled or installed:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>docker exec -d ubuntu-reader-1 ffmpeg -re -stream_loop -1 -i src/video.mp4 -an \
+  -vf scale=640:360 -c:v libx264 -preset veryfast -tune zerolatency \
+  -pix_fmt yuv420p -profile:v baseline -b:v 200k \
+  -f flv rtmp://$IP_RCV_PRIV:1935/c01</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for</span>
+      This starts a second, independent <code class="inline">ffmpeg</code> process inside <code class="inline">reader</code>, separate from the one already feeding Phase 00's direct-UDP comparison stream. It won't survive a <code class="inline">reader</code> restart, and must be stopped selectively (<code class="inline">docker exec ubuntu-reader-1 pkill -f "$IP_RCV_PRIV"</code>) rather than a bare <code class="inline">pkill ffmpeg</code>, which would also kill the unrelated Phase 00 process. RTSP push (<code class="inline">ANNOUNCE</code>) to this same path can return <code class="inline">501 Not Implemented</code> depending on the MediaMTX build; RTMP push is the more reliably supported option and is what's used above. Also confirm port 1935 is actually in <code class="inline">rtsp_bridge</code>'s <code class="inline">ports:</code> list &mdash; a push to an unpublished port fails as a plain connection refused, easy to mistake for a MediaMTX configuration problem.
+    </div>
+
+    <p>Once this is running, clicking any camera marker on the live map (Phase 11B) opens a working video panel &mdash; audio and picture both.</p>
+  </section>
+
+  <!-- PHASE 12 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">12</span><span class="phase-title">Extend the bridge</span></div>
+    <p class="phase-obj">The sensor topic crosses the same bridge as the video, on its own subscription, so a flood affecting one is easy to distinguish from the other in the demo.</p>
+
+    <p>On <strong>Broker B</strong>'s Manager, open <code class="inline">bridge-to-a</code>'s Subscriptions tab &rarr; Incoming Direct, and add one more entry: <code class="inline">sensor/track/&gt;</code> (native Solace wildcard syntax, even though the messages arrive over MQTT). No new queue and no second bridge object needed &mdash; one bridge carries every topic it's told to.</p>
+
+    <div class="callout">
+      <span class="tag">Note</span>
+      This one subscription still covers Phase 11's deeper cell-embedded topics (<code class="inline">sensor/track/&lt;SITE&gt;/cell/&lt;lat&gt;/&lt;lon&gt;</code>) with no change needed &mdash; Solace's <code class="inline">&gt;</code> is a true multi-level wildcard, matching any number of additional topic levels, not just one.
+    </div>
+
+    <div class="callout">
+      <span class="tag">Why this is the more urgent case</span>
+      A frozen video frame is an inconvenience. A dropped track update during exactly the kind of link degradation a jamming or contested-spectrum event would cause is the failure that matters &mdash; especially since whatever is disrupting the link and whatever the sensing system is trying to detect may be the same thing. This is the sharper version of the argument Phase 06 makes with video.
+    </div>
+  </section>
+
+  <!-- PHASE 13 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">13</span><span class="phase-title">Inject &amp; compare, sensor edition</span></div>
+    <p class="phase-obj">Same flood, same link, watched from the live fusion map (or the bare fusion viewer) instead of a video window.</p>
+
+    <p>With one or more <code class="inline">track_gen.sh</code> instances and the fusion map both running, repeat Phase 06's flood:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ (new terminal)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export IP_RCV_PRIV=10.0.3.x   # from Phase 00's table, if this session doesn't have it yet
+iperf3 -c $IP_RCV_PRIV -u -b 10M -t 300</code></pre>
+    </div>
+
+    <p>Expect tracks on the live map to freeze in place during the flood, then jump forward with the backlog of held updates once it stops &mdash; the bare fusion viewer shows the same thing as a pause in scrolling lines. Every late update still carries its original <code class="inline">ts</code> field, a concrete number to point at rather than "it recovered."</p>
+  </section>
+
+  <!-- PHASE 14 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">14</span><span class="phase-title">Tear down Part Three</span></div>
+    <p class="phase-obj">Small cleanup on top of Phase 07 &mdash; this reused the same VPC and instances, so there's no separate AWS teardown.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>pkill -f track_gen.sh
+docker exec ubuntu-reader-1 pkill -f "rtmp://"   # stops the Phase 11C RTMP push only, not Phase 00's stream</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>pkill -f mosquitto_sub
+docker compose stop rtsp_bridge</code></pre>
+    </div>
+
+    <p>Close the live fusion map's browser tab (it holds no server-side state to clean up), then run Phase 07's AWS teardown when everything is actually done &mdash; it removes both brokers and every instance regardless of which parts got built.</p>
+  </section>
+
+  <footer>
+    Rev. 5 &mdash; corrects the bridge's video-topic subscription to Guaranteed (a named queue, <code class="inline">bridge2bQ</code>, not Direct) to match what was actually verified working end to end, and documents the fixes it took to get there: a bridge Remote Message VPN address that must be a real IP rather than an unresolvable <code class="inline">v:&lt;name&gt;</code>, persistent broker storage across restarts, and a browser-facing RTSP bridge with an RTMP-push workaround for a legacy codec-mislabeling bug unrelated to Solace. Part Three's track generator and viewer are now a parameterized, multi-site publisher and a Solace-branded live fusion map with exact-match geofencing and clickable camera markers. Part Two, added in Rev. 4, puts real-time drone detection on top of the resilient feed. The deliverable remains the video demo in Phases 00&ndash;07.
+  </footer>
+
+</div>
+
+<script>
+document.querySelectorAll('.copy-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var block = btn.closest('.cmd').querySelector('code');
+    var text = block.innerText;
+    function done(){
+      var prev = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(function(){ btn.textContent = prev; }, 1400);
+    }
+    try{
+      navigator.clipboard.writeText(text).then(done).catch(function(){
+        var range = document.createRange();
+        range.selectNodeContents(block);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        done();
+      });
+    }catch(e){
+      try{
+        var range = document.createRange();
+        range.selectNodeContents(block);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        done();
+      }catch(e2){}
+    }
+  });
+});
+</script>

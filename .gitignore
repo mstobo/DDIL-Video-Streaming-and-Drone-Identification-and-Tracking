@@ -1,0 +1,27 @@
+# Real, filled-in environment files — NEVER commit these.
+# Only infra/.env.example (placeholder values) should be tracked.
+.env
+*.env
+!.env.example
+!*.env.example
+
+# SSH keys / credentials of any kind
+*.pem
+*.key
+*.ppk
+id_rsa*
+id_ed25519*
+*credentials*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Local scratch / zipped duplicates of infra/
+infra.zip
+*.zip
+
+# Logs and runtime artifacts
+*.log

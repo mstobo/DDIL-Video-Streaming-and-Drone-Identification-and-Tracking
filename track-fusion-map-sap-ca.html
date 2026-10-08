@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!--
+  Canada / DND (DEFENCEX) demo variant — Ottawa-area coordinates + SAP
+  "Advanced Event Mesh" look-and-feel, since SAP white-labels Solace PubSub+
+  as Advanced Event Mesh for its own customers.
+
+  This is a SEPARATE file from track-fusion-map.html — the AT&T/US-military
+  original is completely untouched. To switch demos, just open the other
+  file/tab; there's no shared state (this copy uses its own localStorage key
+  below) and no risk to Monday's build.
+
+  track_gen.sh needs NO changes for this variant — LAT/LON are already env
+  vars. To roam the drone over Ottawa instead of Arlington, TX, just run e.g.:
+    SITE=ottawa TRACK_ID=trk-042 LAT=45.3225 LON=-75.6692 ./track_gen.sh
+  (45.3225, -75.6692 is Ottawa Macdonald–Cartier International — a
+  reasonable "Ottawa airspace" default; swap for any other CAF-relevant
+  point just as easily.)
+
+  Video panel: the current AT&T/Ericsson-branded clip is specific to that
+  audience's own story and isn't appropriate to reuse here — swap in
+  whatever DND-appropriate footage you have before this demo, the same way
+  Phase 03/11C describe for the original.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solace Sensor Fusion — Live Track Map (Ottawa/CA)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Solace 2025 brand palette (Classic Green / Deep Blue / Dark Blue identity),
+       matching the sibling track-fusion-map.html demo. */
+    --deep-blue:#093B5F; --dark-blue:#03213B; --classic-green:#00C895;
+    --bright-green:#ABFF88; --sky-blue:#C2F7FF; --orange:#FCA829;
+    --white:#FFFFFF;
+    --panel-bg:rgba(9,59,95,0.90); --panel-border:rgba(0,200,149,0.55);
+    --font-mono:"Space Mono","SF Mono",Consolas,monospace;
+    --font-body:"Figtree",-apple-system,"Segoe UI",sans-serif;
+    --font-serif:"Calibri","Aptos",Georgia,serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--dark-blue);color:var(--white);font-family:var(--font-body);}
+  #map{position:absolute;inset:0;}
+
+  .panel{position:absolute;background:var(--panel-bg);border:1px solid var(--panel-border);
+    border-radius:2px;padding:12px 14px;font-family:var(--font-mono);font-size:12px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.35);z-index:1000;}
+  .panel h2{font-family:var(--font-mono);font-weight:700;font-size:13px;margin:0 0 10px;
+    color:var(--classic-green);text-transform:uppercase;letter-spacing:0.04em;}
+
+  /* top-left: geo filtering + connection */
+  #filterPanel{top:14px;left:14px;width:270px;}
+  #filterPanel .row{display:flex;gap:6px;margin-bottom:8px;}
+  #filterPanel button{flex:1;font-family:var(--font-mono);font-size:11px;padding:6px 4px;
+    background:transparent;border:1px solid var(--classic-green);color:var(--classic-green);
+    cursor:pointer;border-radius:2px;text-transform:uppercase;letter-spacing:0.03em;}
+  #filterPanel button:hover{background:rgba(0,200,149,0.15);}
+  #filterPanel button.active{background:var(--classic-green);color:var(--dark-blue);}
+  #filterPanel .slider-row{margin:10px 0 6px;}
+  #filterPanel .slider-label{display:flex;justify-content:space-between;color:var(--sky-blue);
+    font-size:10.5px;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px;}
+  #filterPanel .slider-label b{color:var(--bright-green);font-weight:700;}
+  #filterPanel input[type=range]{width:100%;accent-color:var(--classic-green);}
+  #filterPanel .divider{border-top:1px dashed rgba(194,247,255,0.25);margin:10px 0;}
+  #filterPanel .conn-row{display:flex;gap:6px;margin-bottom:6px;}
+  #filterPanel .conn-row label{color:var(--sky-blue);font-size:10px;align-self:center;width:44px;
+    text-transform:uppercase;flex:0 0 auto;}
+  #filterPanel input[type=text]{flex:1;font-family:var(--font-mono);font-size:11px;
+    background:rgba(3,33,59,0.8);border:1px solid rgba(194,247,255,0.3);color:var(--white);
+    padding:4px 6px;border-radius:2px;min-width:0;}
+  #filterPanel .connectBtn{width:100%;margin-top:2px;background:var(--classic-green);
+    color:var(--dark-blue);border:1px solid var(--classic-green);font-weight:700;}
+  .fencestatus{margin-top:8px;font-size:10.5px;color:var(--sky-blue);line-height:1.5;}
+  .fencestatus.bad{color:var(--orange);}
+
+  /* top-right: branding */
+  #brandPanel{top:14px;right:14px;width:300px;text-align:right;}
+  #brandPanel .word{font-family:var(--font-serif);font-weight:700;font-size:30px;
+    color:var(--classic-green);letter-spacing:-0.01em;}
+  #brandPanel .word span{color:var(--bright-green);}
+  #brandPanel .title{font-size:14px;font-weight:600;margin-top:4px;color:var(--white);
+    font-family:var(--font-serif);}
+  #brandPanel .sub{font-size:11px;color:var(--sky-blue);margin-top:4px;line-height:1.5;
+    font-family:var(--font-body);}
+  .statusline{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:8px;
+    font-size:11px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--sky-blue);flex:0 0 auto;}
+  .dot.ok{background:var(--classic-green);}
+  .dot.bad{background:var(--orange);}
+  .dot.stale{background:var(--bright-green);}
+
+  /* bottom-left: stats */
+  #statsPanel{bottom:14px;left:14px;width:230px;}
+  #statsPanel .stat{display:flex;justify-content:space-between;padding:3px 0;}
+  #statsPanel .stat .v{color:var(--bright-green);font-weight:700;}
+
+  /* bottom-right: legend */
+  #legendPanel{bottom:14px;right:14px;width:230px;max-height:220px;overflow:auto;}
+  #legendPanel .row2{display:flex;justify-content:space-between;gap:10px;padding:2px 0;}
+  #legendPanel .swatch{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;}
+  #legendPanel .age{color:var(--sky-blue);}
+  #legendPanel .age.stale{color:var(--bright-green);font-weight:700;}
+  #legendPanel .age.dead{color:var(--orange);font-weight:700;}
+
+  /* bottom-center: topic preview */
+  #topicPanel{bottom:14px;left:50%;transform:translateX(-50%);width:min(560px,60vw);
+    text-align:left;}
+  #topicPanel .line{padding:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #topicPanel .field{color:var(--bright-green);}
+  #topicPanel .lit{color:var(--sky-blue);}
+  #topicPanel .val{color:var(--classic-green);}
+
+  .leaflet-popup-content-wrapper{background:var(--deep-blue);color:var(--white);}
+  .leaflet-popup-tip{background:var(--deep-blue);}
+  .leaflet-popup-content{font-family:var(--font-mono);font-size:12px;white-space:pre;}
+  .leaflet-control-attribution{background:rgba(3,33,59,0.7) !important;color:var(--sky-blue) !important;}
+  .leaflet-control-attribution a{color:var(--sky-blue) !important;}
+
+  .camera-icon{background:var(--deep-blue);border:2px solid var(--classic-green);border-radius:3px;
+    width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;
+    cursor:pointer;box-shadow:0 0 6px rgba(0,200,149,0.6);}
+
+  #videoPanel{position:absolute;z-index:2000;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:min(640px,86vw);background:var(--dark-blue);border:1px solid var(--panel-border);
+    border-radius:3px;box-shadow:0 10px 40px rgba(0,0,0,0.55);padding:10px;}
+  #videoPanel[hidden]{display:none;}
+  #videoPanel .vp-head{display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--font-mono);font-size:12px;color:var(--classic-green);margin-bottom:8px;
+    text-transform:uppercase;letter-spacing:0.04em;}
+  #videoPanel .vp-head button{background:transparent;border:1px solid var(--orange);color:var(--orange);
+    font-family:var(--font-mono);font-size:11px;padding:3px 9px;cursor:pointer;border-radius:2px;}
+  #videoPanel iframe{width:100%;height:360px;display:block;background:#000;border-radius:2px;border:none;}
+  #videoPanel .vp-status{font-family:var(--font-mono);font-size:10.5px;color:var(--sky-blue);margin-top:6px;}
+
+  @media (max-width:820px){
+    #brandPanel{display:none;}
+    #topicPanel{display:none;}
+    #legendPanel{max-height:150px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div class="panel" id="filterPanel">
+  <h2>Geo Filtering</h2>
+  <div class="row">
+    <button id="btnCircle">Add Circle</button>
+    <button id="btnPolygon">Add Polygon</button>
+    <button id="btnRect">Add Rect</button>
+  </div>
+  <div class="row">
+    <button id="btnClear" style="border-color:var(--orange);color:var(--orange);">Remove Filters</button>
+  </div>
+  <div class="slider-row">
+    <div class="slider-label"><span>Max Subs</span><b id="maxSubsVal">200</b></div>
+    <input type="range" id="maxSubs" min="10" max="500" step="10" value="200">
+  </div>
+  <div class="slider-row">
+    <div class="slider-label"><span>Cell Size (&deg;)</span><b>must match track_gen.sh's CELL</b></div>
+    <input type="text" id="cellSize" placeholder="0.01" style="width:100%;">
+  </div>
+  <div class="fencestatus" id="fenceStatus">No fence &mdash; showing all tracks</div>
+
+  <div class="divider"></div>
+  <div class="conn-row"><label>Host</label><input type="text" id="host" placeholder="127.0.0.1"></div>
+  <div class="conn-row"><label>Port</label><input type="text" id="port" placeholder="8000" style="max-width:70px;"><label style="width:auto;margin-left:8px;">Topic</label><input type="text" id="topic" placeholder="sensor/track/#"></div>
+  <button class="connectBtn" id="connectBtn">Connect</button>
+
+  <div class="divider"></div>
+  <div class="conn-row"><label>Vid Port</label><input type="text" id="vidPort" placeholder="8888" style="max-width:70px;"><label style="width:auto;margin-left:8px;">Path</label><input type="text" id="vidPath" placeholder="c01"></div>
+  <div style="font-size:10px;color:var(--sky-blue);margin-top:2px;">Video bridge assumed on the same host as the broker, tunnelled the same way. Click a camera pin to view.</div>
+</div>
+
+<div class="panel" id="brandPanel">
+  <div class="word">solace<span>.</span></div>
+  <div class="title">Sensor Fusion &mdash; Live Track Map</div>
+  <div class="sub">Real-time MQTT over PubSub+ &middot; broker-side geo-cell bridging &middot; client-side geofence filtering</div>
+  <div class="statusline"><span class="dot" id="statusDot"></span><span id="statusText">not connected</span></div>
+</div>
+
+<div class="panel" id="statsPanel">
+  <h2>Live Stats</h2>
+  <div class="stat"><span>Recv'd Message Rate:</span><span class="v" id="statRate">0 msg/s</span></div>
+  <div class="stat"><span># of Subscriptions:</span><span class="v" id="statSubs">1</span></div>
+  <div class="stat"><span>Coverage Accuracy:</span><span class="v" id="statCoverage">&mdash;</span></div>
+  <div class="stat"><span>Tracked:</span><span class="v" id="statTracked">0</span></div>
+</div>
+
+<div class="panel" id="legendPanel">
+  <h2>Tracks</h2>
+  <div id="legend">No tracks yet.</div>
+</div>
+
+<div class="panel" id="videoPanel" hidden>
+  <div class="vp-head"><span id="vpTitle">CAM &mdash; LIVE</span><button id="vpClose">Close</button></div>
+  <iframe id="vpFrame" allow="autoplay" title="camera feed"></iframe>
+  <div class="vp-status" id="vpStatus">connecting&hellip;</div>
+</div>
+
+<div class="panel" id="topicPanel">
+  <div class="line"><span class="lit">sensor/track/</span><span class="field">{site}</span><span class="lit">/cell/</span><span class="field">{latIdx}</span><span class="lit">/</span><span class="field">{lonIdx}</span></div>
+  <div class="line" id="topicExample"><span class="lit">last:</span> &mdash;</div>
+  <div class="line" id="topicSubs"><span class="lit">sub:</span> sensor/track/#</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  function loadSettings(){
+    // Distinct key from track-fusion-map.html's "fusionMapSettings" so saved
+    // connect settings never collide if both demo variants are opened in the
+    // same browser.
+    try{ var raw = localStorage.getItem("fusionMapSettingsSAPCA"); return raw ? JSON.parse(raw) : {}; }
+    catch(e){ return {}; }
+  }
+  function saveSettings(s){
+    try{ localStorage.setItem("fusionMapSettingsSAPCA", JSON.stringify(s)); }catch(e){}
+  }
+  var saved = loadSettings();
+  document.getElementById("host").value = saved.host || "";
+  document.getElementById("port").value = saved.port || "8000";
+  document.getElementById("topic").value = saved.topic || "sensor/track/#";
+  document.getElementById("maxSubs").value = saved.maxSubs || 200;
+  document.getElementById("cellSize").value = saved.cellSize || "0.01";
+  document.getElementById("vidPort").value = saved.vidPort || "8888";
+  document.getElementById("vidPath").value = saved.vidPath || "c01";
+
+  function currentCellSize(){
+    var v = parseFloat(document.getElementById("cellSize").value);
+    return (v && v > 0) ? v : 0.01;
+  }
+  function refreshMaxSubsLabel(){
+    document.getElementById("maxSubsVal").textContent = document.getElementById("maxSubs").value;
+  }
+  refreshMaxSubsLabel();
+  document.getElementById("maxSubs").addEventListener("input", refreshMaxSubsLabel);
+
+  // Ottawa Macdonald-Cartier International (45.3225, -75.6692) in place of the
+  // original's Arlington, TX (AT&T Stadium) default — matches track_gen.sh's
+  // LAT/LON when you run it with SITE=ottawa LAT=45.3225 LON=-75.6692.
+  var map = L.map("map", { zoomControl: true, attributionControl: true }).setView([45.3225, -75.6692], 12);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 16,
+    attribution: 'Esri &mdash; Esri, HERE, Garmin, FAO, NOAA, USGS, &copy; OpenStreetMap contributors, GIS community'
+  }).addTo(map);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 16
+  }).addTo(map);
+
+  var drawnItems = new L.FeatureGroup();
+  map.addLayer(drawnItems);
+  var editControl = new L.EditToolbar.Edit(map, { featureGroup: drawnItems });
+
+  var palette = ["#00C895", "#ABFF88", "#C2F7FF", "#FCA829", "#FFF7C2", "#C7FFCB"];
+  var tracks = {};
+  var cameras = {};
+  var colorIdx = 0;
+  var client = null;
+  var haveFitted = false;
+  var currentSubs = [];
+  var activeCellTopics = null;
+  var lastRawTopic = null, lastRawMsg = null;
+  var msgCountWindow = 0, lastRate = 0;
+
+  function colorFor(){ colorIdx = (colorIdx + 1) % palette.length; return palette[colorIdx]; }
+
+  function setStatus(cls, text){
+    document.getElementById("statusDot").className = "dot " + cls;
+    document.getElementById("statusText").textContent = text;
+  }
+  function setFenceStatus(cls, text){
+    var el = document.getElementById("fenceStatus");
+    el.className = "fencestatus " + (cls || "");
+    el.textContent = text;
+  }
+  function setStatSubs(n){ document.getElementById("statSubs").textContent = n; }
+  function setStatCoverage(text){ document.getElementById("statCoverage").textContent = text; }
+  function setTopicSubsLine(){
+    var el = document.getElementById("topicSubs");
+    var subs = currentSubs.length ? currentSubs : [document.getElementById("topic").value.trim() || "sensor/track/#"];
+    var shown = subs.slice(0, 2).join("  ") + (subs.length > 2 ? "  (+" + (subs.length - 2) + " more)" : "");
+    el.innerHTML = '<span class="lit">sub:</span> <span class="val">' + shown + "</span>";
+  }
+  function setTopicExample(){
+    var el = document.getElementById("topicExample");
+    if(!lastRawTopic){ el.innerHTML = '<span class="lit">last:</span> &mdash;'; return; }
+    el.innerHTML = '<span class="lit">last:</span> <span class="val">' + lastRawTopic + "</span>";
+  }
+
+  function fmtAge(ms){ if(ms < 1000) return "just now"; return Math.floor(ms/1000) + "s ago"; }
+
+  function renderLegend(){
+    var el = document.getElementById("legend");
+    var ids = Object.keys(tracks);
+    if(ids.length === 0){ el.textContent = "No tracks yet."; document.getElementById("statTracked").textContent = "0"; return; }
+    var now = Date.now();
+    var alive = 0;
+    var rows = ids.sort().map(function(id){
+      var t = tracks[id];
+      var age = now - t.lastTs;
+      if(age <= DEAD_MS) alive++;
+      var ageCls = age > DEAD_MS ? "dead" : (age > STALE_MS ? "stale" : "");
+      var swatch = '<span class="swatch" style="background:' + t.color + '"></span>';
+      return '<div class="row2"><span>' + swatch + id + '</span><span class="age ' + ageCls + '">' + fmtAge(age) + '</span></div>';
+    });
+    el.innerHTML = rows.join("");
+    document.getElementById("statTracked").textContent = alive + " / " + ids.length;
+  }
+  setInterval(renderLegend, 500);
+
+  // Once a track has been dead (no update) past REMOVE_AFTER_MS, drop its marker and
+  // trail from the map entirely rather than leaving a frozen ghost sitting there —
+  // this is what makes a drone that's walked outside a geofence visibly disappear
+  // instead of appearing to still be present.
+  var STALE_MS = 3000, DEAD_MS = 8000, REMOVE_AFTER_MS = 10000;
+  function pruneDeadTracks(){
+    var now = Date.now();
+    Object.keys(tracks).forEach(function(id){
+      if(now - tracks[id].lastTs > REMOVE_AFTER_MS){
+        map.removeLayer(tracks[id].marker);
+        map.removeLayer(tracks[id].path);
+        delete tracks[id];
+      }
+    });
+  }
+  setInterval(pruneDeadTracks, 1000);
+
+  setInterval(function(){
+    lastRate = msgCountWindow;
+    msgCountWindow = 0;
+    document.getElementById("statRate").textContent = lastRate + " msg/s";
+  }, 1000);
+
+  function clearAllTracks(){
+    Object.keys(tracks).forEach(function(id){
+      map.removeLayer(tracks[id].marker);
+      map.removeLayer(tracks[id].path);
+    });
+    tracks = {};
+  }
+
+  function upsertTrack(msg){
+    var id = msg.track_id || (msg.site || "unknown");
+    var lat = parseFloat(msg.lat), lon = parseFloat(msg.lon);
+    if(isNaN(lat) || isNaN(lon)) return;
+    if(!tracks[id]){
+      var color = colorFor();
+      var marker = L.circleMarker([lat, lon], { radius: 7, color: color, fillColor: color, fillOpacity: 0.9, weight: 2 }).addTo(map);
+      var path = L.polyline([[lat, lon]], { color: color, weight: 2, opacity: 0.7 }).addTo(map);
+      tracks[id] = { color: color, marker: marker, path: path, points: [[lat, lon]], lastMsg: msg, lastTs: Date.now() };
+    } else {
+      var t = tracks[id];
+      t.marker.setLatLng([lat, lon]);
+      t.points.push([lat, lon]);
+      if(t.points.length > 300) t.points.shift();
+      t.path.setLatLngs(t.points);
+      t.lastMsg = msg; t.lastTs = Date.now();
+    }
+    var t2 = tracks[id];
+    t2.marker.bindPopup(
+      id + "\n" + "site " + (msg.site || "?") + "\n" +
+      "lat " + lat.toFixed(5) + "  lon " + lon.toFixed(5) + "\n" +
+      "alt " + (msg.alt_m != null ? msg.alt_m + " m" : "?") + "\n" +
+      "speed " + (msg.speed_mps != null ? msg.speed_mps + " m/s" : "?") + "\n" +
+      "hdg " + (msg.heading_deg != null ? msg.heading_deg + "°" : "?") + "\n" +
+      "conf " + (msg.confidence != null ? msg.confidence : "?") + "\n" +
+      "ts " + (msg.ts || "?")
+    );
+    if(!haveFitted){ map.setView([lat, lon], 13); haveFitted = true; }
+    if(msg.site){
+      // Prefer the site's published fixed home position over the live lat/lon —
+      // otherwise the camera pin lands wherever the drone happened to be on the
+      // first message THIS browser session received, which can be well down the
+      // track if track_gen.sh was already running before the map connected.
+      var homeLat = (msg.home_lat != null) ? parseFloat(msg.home_lat) : lat;
+      var homeLon = (msg.home_lon != null) ? parseFloat(msg.home_lon) : lon;
+      ensureCamera(msg.site, homeLat, homeLon);
+    }
+  }
+
+  function cameraIcon(){
+    return L.divIcon({
+      className: "",
+      html: '<div class="camera-icon">📷</div>',
+      iconSize: [22, 22], iconAnchor: [11, 11]
+    });
+  }
+
+  function ensureCamera(site, lat, lon){
+    if(cameras[site]) return cameras[site];
+    var marker = L.marker([lat, lon], { icon: cameraIcon() }).addTo(map);
+    marker.on("click", function(){ openVideo(site); });
+    marker.bindTooltip("CAM " + site, { direction: "top", offset: [0, -10] });
+    cameras[site] = { marker: marker, lat: lat, lon: lon };
+    return cameras[site];
+  }
+
+  function openVideo(site){
+    var host = document.getElementById("host").value.trim();
+    var port = document.getElementById("vidPort").value.trim() || "8888";
+    var path = document.getElementById("vidPath").value.trim() || "c01";
+    if(!host){ setStatus("bad", "enter a broker/video host first"); return; }
+
+    document.getElementById("vpTitle").textContent = "CAM " + site + " — LIVE";
+    var url = "http://" + host + ":" + port + "/" + path;
+    document.getElementById("vpStatus").textContent = url;
+    document.getElementById("videoPanel").hidden = false;
+
+    // Loaded as a page (MediaMTX's own built-in player), not fetched via JS —
+    // this avoids the CORS issues a file:// page hits trying to XHR/fetch HLS
+    // segments cross-origin. A plain navigation has no such restriction.
+    document.getElementById("vpFrame").src = url;
+  }
+
+  function closeVideo(){
+    document.getElementById("videoPanel").hidden = true;
+    document.getElementById("vpFrame").src = "about:blank";
+  }
+  document.getElementById("vpClose").addEventListener("click", closeVideo);
+
+  // ---- point-in-shape tests -------------------------------------------------
+  function pointInCircle(pt, center, radius){ return center.distanceTo(pt) <= radius; }
+  function pointInRect(pt, bounds){ return bounds.contains(pt); }
+  function pointInPolygon(pt, latlngs){
+    var x = pt.lng, y = pt.lat, inside = false;
+    for(var i = 0, j = latlngs.length - 1; i < latlngs.length; j = i++){
+      var xi = latlngs[i].lng, yi = latlngs[i].lat;
+      var xj = latlngs[j].lng, yj = latlngs[j].lat;
+      var intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if(intersect) inside = !inside;
+    }
+    return inside;
+  }
+
+  // Segment-vs-segment intersection (for polygon-vs-cell overlap below).
+  function segmentsIntersect(p1, p2, p3, p4){
+    function cross(ax, ay, bx, by){ return ax * by - ay * bx; }
+    var d1x = p2.lng - p1.lng, d1y = p2.lat - p1.lat;
+    var d2x = p4.lng - p3.lng, d2y = p4.lat - p3.lat;
+    var denom = cross(d1x, d1y, d2x, d2y);
+    if(denom === 0) return false; // parallel (or collinear) — good enough for a boundary overlap test
+    var t = cross(p3.lng - p1.lng, p3.lat - p1.lat, d2x, d2y) / denom;
+    var u = cross(p3.lng - p1.lng, p3.lat - p1.lat, d1x, d1y) / denom;
+    return t >= 0 && t <= 1 && u >= 0 && u <= 1;
+  }
+
+  function shapeTester(layer){
+    if(layer instanceof L.Circle){
+      var center = layer.getLatLng(), radius = layer.getRadius();
+      return {
+        test: function(pt){ return pointInCircle(pt, center, radius); },
+        bounds: layer.getBounds(),
+        // Exact circle-vs-axis-aligned-rect overlap: clamp the circle's center into
+        // the cell's rectangle, then check whether that closest point is within radius.
+        cellOverlaps: function(latLo, latHi, lonLo, lonHi){
+          var clat = Math.max(latLo, Math.min(center.lat, latHi));
+          var clon = Math.max(lonLo, Math.min(center.lng, lonHi));
+          return center.distanceTo(L.latLng(clat, clon)) <= radius;
+        }
+      };
+    }
+    if(layer instanceof L.Rectangle){
+      var b = layer.getBounds();
+      return {
+        test: function(pt){ return pointInRect(pt, b); },
+        bounds: b,
+        // Exact axis-aligned rect-vs-rect overlap: two intervals overlap unless one
+        // is entirely to a side of the other on either axis.
+        cellOverlaps: function(latLo, latHi, lonLo, lonHi){
+          return !(b.getWest() > lonHi || b.getEast() < lonLo || b.getSouth() > latHi || b.getNorth() < latLo);
+        }
+      };
+    }
+    // polygon (includes rectangle's superclass path, checked above first)
+    var latlngs = layer.getLatLngs()[0];
+    return {
+      test: function(pt){ return pointInPolygon(pt, latlngs); },
+      bounds: layer.getBounds(),
+      // General polygon-vs-rect overlap: point sampling alone misses a small/rotated
+      // shape that doesn't happen to contain any of a cell's corners (or vice versa)
+      // even though its edges genuinely cross the cell — so also check for any edge
+      // crossing, which catches exactly that case.
+      cellOverlaps: function(latLo, latHi, lonLo, lonHi){
+        var corners = [
+          L.latLng(latLo, lonLo), L.latLng(latLo, lonHi),
+          L.latLng(latHi, lonHi), L.latLng(latHi, lonLo)
+        ];
+        for(var i = 0; i < corners.length; i++){
+          if(pointInPolygon(corners[i], latlngs)) return true;
+        }
+        for(var j = 0; j < latlngs.length; j++){
+          if(pointInRect(latlngs[j], L.latLngBounds([latLo, lonLo], [latHi, lonHi]))) return true;
+        }
+        for(var k = 0; k < latlngs.length; k++){
+          var v1 = latlngs[k], v2 = latlngs[(k + 1) % latlngs.length];
+          for(var e = 0; e < corners.length; e++){
+            var c1 = corners[e], c2 = corners[(e + 1) % corners.length];
+            if(segmentsIntersect(v1, v2, c1, c2)) return true;
+          }
+        }
+        return false;
+      }
+    };
+  }
+
+  function applyGeofence(layer){
+    var cellSize = currentCellSize();
+    var maxSubs = parseInt(document.getElementById("maxSubs").value, 10);
+    var shape = shapeTester(layer);
+    var b = shape.bounds;
+    var latMin = Math.floor(b.getSouth() / cellSize), latMax = Math.floor(b.getNorth() / cellSize);
+    var lonMin = Math.floor(b.getWest() / cellSize), lonMax = Math.floor(b.getEast() / cellSize);
+
+    var included = [];
+    var truncated = false;
+    cellScan:
+    for(var la = latMin; la <= latMax; la++){
+      for(var lo = lonMin; lo <= lonMax; lo++){
+        var cLatLo = la * cellSize, cLatHi = (la + 1) * cellSize;
+        var cLonLo = lo * cellSize, cLonHi = (lo + 1) * cellSize;
+        // Exact per-shape overlap test (not point sampling) — a 4-corners-plus-center
+        // sample can miss a genuine overlap when the drawn shape is roughly the size
+        // of a single cell or isn't axis-aligned, which is a common case, not a rare one.
+        var overlaps = shape.cellOverlaps(cLatLo, cLatHi, cLonLo, cLonHi);
+        if(overlaps){
+          if(included.length >= maxSubs){ truncated = true; break cellScan; }
+          included.push({ la: la, lo: lo, latLo: cLatLo, latHi: cLatHi, lonLo: cLonLo, lonHi: cLonHi });
+        }
+      }
+    }
+
+    // Always apply whatever we found — even a truncated, partial set — rather than
+    // silently leaving the previous (often unfiltered) subscription in place. A fence
+    // that can't be fully honored should visibly show a smaller, honest picture, not
+    // quietly do nothing while the drawn shape on screen suggests it's active.
+    // coverage accuracy: of the sample points inside included cells, what fraction are truly inside the shape
+    var SUB = 4, insideCount = 0, totalCount = 0;
+    included.forEach(function(c){
+      for(var i = 0; i < SUB; i++){
+        for(var j = 0; j < SUB; j++){
+          var plat = c.latLo + (i + 0.5) / SUB * (c.latHi - c.latLo);
+          var plon = c.lonLo + (j + 0.5) / SUB * (c.lonHi - c.lonLo);
+          totalCount++;
+          if(shape.test(L.latLng(plat, plon))) insideCount++;
+        }
+      }
+    });
+    var coverage = totalCount ? (100 * insideCount / totalCount) : null;
+
+    var topics = included.map(function(c){ return "sensor/track/+/cell/" + c.la + "/" + c.lo; });
+    activeCellTopics = topics;
+    resubscribe();
+    clearAllTracks();
+    haveFitted = true;
+    if(truncated){
+      setFenceStatus("bad", "Partial coverage: capped at " + maxSubs + " of the needed cells — raise Max Subs, raise Cell Size, or draw a smaller shape for full coverage");
+    } else if(included.length === 0){
+      setFenceStatus("bad", "0 cells matched this shape — it may be smaller than one Cell Size (" + cellSize + "°); try a larger shape or a smaller Cell Size");
+    } else {
+      setFenceStatus("", included.length + " cell" + (included.length === 1 ? "" : "s") + " subscribed, lat " + latMin + "…" + latMax + ", lon " + lonMin + "…" + lonMax);
+    }
+    setStatCoverage(coverage === null ? "—" : coverage.toFixed(3) + "%" + (truncated ? " (partial)" : ""));
+  }
+
+  function clearGeofence(){
+    activeCellTopics = null;
+    resubscribe();
+    clearAllTracks();
+    haveFitted = false;
+    setFenceStatus("", "No fence — showing all tracks");
+    setStatCoverage("—");
+  }
+
+  function resubscribe(){
+    setStatSubs((activeCellTopics && activeCellTopics.length) ? activeCellTopics.length : 1);
+    setTopicSubsLine();
+    if(!client || !client.connected) return;
+    var newSubs = (activeCellTopics && activeCellTopics.length) ? activeCellTopics.slice()
+      : [document.getElementById("topic").value.trim() || "sensor/track/#"];
+    if(currentSubs.length) client.unsubscribe(currentSubs, function(){});
+    client.subscribe(newSubs, function(err, granted){
+      if(err){ setStatus("bad", "subscribe failed: " + err.message); return; }
+      var denied = (granted || []).filter(function(g){ return g.qos === 128; });
+      if(denied.length){
+        setFenceStatus("bad", denied.length + " of " + granted.length + " subscriptions denied by broker (check ACL) — e.g. " + denied[0].topic);
+      }
+    });
+    currentSubs = newSubs;
+  }
+
+  // ---- draw tool wiring -------------------------------------------------
+  var currentDrawer = null;
+  function stopDrawer(){ if(currentDrawer){ currentDrawer.disable(); currentDrawer = null; } setActiveBtn(null); }
+  function setActiveBtn(id){
+    ["btnCircle","btnPolygon","btnRect"].forEach(function(b){ document.getElementById(b).classList.remove("active"); });
+    if(id) document.getElementById(id).classList.add("active");
+  }
+  document.getElementById("btnCircle").addEventListener("click", function(){
+    stopDrawer(); currentDrawer = new L.Draw.Circle(map, { shapeOptions: { color: "#FCA829", weight: 2 } });
+    currentDrawer.enable(); setActiveBtn("btnCircle");
+  });
+  document.getElementById("btnPolygon").addEventListener("click", function(){
+    stopDrawer(); currentDrawer = new L.Draw.Polygon(map, { shapeOptions: { color: "#FCA829", weight: 2 } });
+    currentDrawer.enable(); setActiveBtn("btnPolygon");
+  });
+  document.getElementById("btnRect").addEventListener("click", function(){
+    stopDrawer(); currentDrawer = new L.Draw.Rectangle(map, { shapeOptions: { color: "#FCA829", weight: 2 } });
+    currentDrawer.enable(); setActiveBtn("btnRect");
+  });
+  document.getElementById("btnClear").addEventListener("click", function(){
+    stopDrawer(); drawnItems.clearLayers(); clearGeofence();
+  });
+  map.on(L.Draw.Event.CREATED, function(e){
+    drawnItems.clearLayers();
+    drawnItems.addLayer(e.layer);
+    applyGeofence(e.layer);
+    stopDrawer();
+  });
+
+  document.getElementById("cellSize").addEventListener("change", function(){
+    var layers = drawnItems.getLayers();
+    if(layers.length) applyGeofence(layers[0]);
+  });
+  document.getElementById("maxSubs").addEventListener("change", function(){
+    var layers = drawnItems.getLayers();
+    if(layers.length) applyGeofence(layers[0]);
+  });
+
+  function connect(){
+    var host = document.getElementById("host").value.trim();
+    var port = document.getElementById("port").value.trim() || "8000";
+    var topic = document.getElementById("topic").value.trim() || "sensor/track/#";
+    saveSettings({
+      host: host, port: port, topic: topic,
+      maxSubs: document.getElementById("maxSubs").value,
+      cellSize: document.getElementById("cellSize").value,
+      vidPort: document.getElementById("vidPort").value,
+      vidPath: document.getElementById("vidPath").value
+    });
+    if(!host){ setStatus("bad", "enter a broker host first"); return; }
+    if(client){ try{ client.end(true); }catch(e){} client = null; }
+    currentSubs = [];
+    setStatus("stale", "connecting to " + host + ":" + port + " …");
+    var url = "ws://" + host + ":" + port + "/mqtt";
+    try{ client = mqtt.connect(url, { connectTimeout: 6000, reconnectPeriod: 3000 }); }
+    catch(e){ setStatus("bad", "connect failed: " + e.message); return; }
+
+    client.on("connect", function(){ setStatus("ok", "connected · " + host + ":" + port); resubscribe(); });
+    client.on("reconnect", function(){ setStatus("stale", "reconnecting …"); });
+    client.on("close", function(){ setStatus("bad", "disconnected"); });
+    client.on("error", function(err){ setStatus("bad", "error: " + err.message); });
+    client.on("message", function(topicRecv, payload){
+      msgCountWindow++;
+      lastRawTopic = topicRecv;
+      setTopicExample();
+      try{ upsertTrack(JSON.parse(payload.toString())); }catch(e){}
+    });
+  }
+  document.getElementById("connectBtn").addEventListener("click", connect);
+
+  setTopicSubsLine();
+  setTopicExample();
+  if(saved.host){ connect(); }
+})();
+</script>
+</body>
+</html>

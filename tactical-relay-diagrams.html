@@ -1,0 +1,229 @@
+<title>Tactical Relay Diagrams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#093B5F;
+    --panel:#03213B;
+    --ink:#FFFFFF;
+    --muted:#D6D6D6;
+    --line:#D6D6D6;
+    --accent:#00C895;
+    --chip-bg:#03213B;
+    --chip-ink:#00C895;
+    --warn:#FCA829;
+    --font-display:"Calibri", "Aptos", "Georgia", serif;
+    --font-body:"Figtree", -apple-system, "Segoe UI", sans-serif;
+    --font-mono:"Space Mono", "SF Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#03213B; --panel:#093B5F; --ink:#FFFFFF; --muted:#D6D6D6;
+      --line:#D6D6D6; --accent:#ABFF88; --chip-bg:#093B5F; --chip-ink:#ABFF88; --warn:#FCA829;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#03213B; --panel:#093B5F; --ink:#FFFFFF; --muted:#D6D6D6;
+    --line:#D6D6D6; --accent:#ABFF88; --chip-bg:#093B5F; --chip-ink:#ABFF88; --warn:#FCA829;
+  }
+
+  *{box-sizing:border-box;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-body);
+    font-size:16px;line-height:1.6;margin:0;padding:0 20px 90px;}
+  .wrap{max-width:860px;margin:0 auto;}
+
+  h1{font-family:var(--font-display);font-weight:800;letter-spacing:0.01em;
+    text-wrap:balance;margin:0 0 14px;font-size:clamp(30px,5.5vw,44px);line-height:1.0;}
+
+  .kicker{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--chip-ink);background:var(--chip-bg);
+    display:inline-block;padding:4px 10px;margin:36px 0 16px;}
+
+  .dek{color:var(--muted);font-size:16.5px;max-width:66ch;margin:0 0 18px;}
+  .lineage{font-size:14px;color:var(--muted);margin:0 0 44px;}
+  .lineage a{color:var(--ink);}
+
+  .part-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--accent);margin:64px 0 6px;}
+  .part-label:first-of-type{margin-top:0;}
+  h2.part-title{font-family:var(--font-display);font-weight:800;font-size:26px;margin:0 0 8px;}
+  .part-dek{color:var(--muted);font-size:15px;max-width:66ch;margin:0 0 22px;}
+
+  figure{margin:0 0 20px;padding:0;}
+  .fig-label{font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;
+    text-transform:uppercase;color:var(--accent);margin:0 0 10px;}
+  figure svg{width:100%;height:auto;display:block;color:var(--ink);}
+  figcaption{color:var(--muted);font-size:14.5px;max-width:70ch;margin-top:12px;}
+
+  .divider{border:none;border-top:1px solid var(--line);margin:48px 0;}
+
+  .compare{border-left:3px solid var(--accent);background:var(--panel);
+    padding:14px 18px;margin:24px 0 0;font-size:15px;}
+  .compare .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;
+    text-transform:uppercase;color:var(--accent);display:block;margin-bottom:6px;}
+
+  footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:13px;}
+</style>
+
+<div class="wrap">
+  <span class="kicker">Companion &middot; Tactical Field Manual, Rev. 3</span>
+  <h1>One Bridge, Two Payloads</h1>
+  <p class="dek">Redrawn for the current build: a bridge queue on Broker A is what actually crosses the shaped, flooded link, for both use cases in the Field Manual. Video and sensor telemetry share the same mechanism &mdash; they just get their own queue and topic.</p>
+  <p class="lineage">Companion to the <a href="https://claude.ai/code/artifact/dea95bf9-dfcc-43c1-9583-26f14e414855">Tactical Field Manual</a>. Replaces this artifact's earlier diagrams, which showed the retired BroadcastMe/bare-bridge topology.</p>
+
+  <span class="part-label">Part One</span>
+  <h2 class="part-title">Video</h2>
+  <p class="part-dek">The direct-UDP comparison and the Solace-bridged RTSP path run at once, over the same shaped interface &mdash; which is exactly why both share one fate at the queue, and only one of them has a way back.</p>
+
+  <figure>
+    <svg viewBox="0 0 860 440" role="img" aria-label="Direct UDP video and a Solace-bridged RTSP path both cross the same shaped, flooded shaper interface. The direct path has no recovery from loss. The bridged path publishes direct to a local Broker A, whose bridge-to-b queue promotes it to guaranteed and retries delivery to Broker B across the shaper, before reaching the sink cascade and a second viewer.">
+      <defs>
+        <marker id="ar1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><polygon points="0,0 7,3 0,6" fill="currentColor"/></marker>
+        <marker id="arA1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><polygon points="0,0 7,3 0,6" style="fill:var(--accent)"/></marker>
+      </defs>
+
+      <rect x="10" y="15" width="270" height="410" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>
+      <text x="145" y="10" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" letter-spacing="0.08em" fill="currentColor" opacity="0.75">SOURCE SUBNET</text>
+
+      <rect x="35" y="35" width="220" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="56" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" fill="currentColor">ffmpeg (direct)</text>
+
+      <rect x="35" y="115" width="220" height="40" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="132" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" fill="currentColor">RTSP source</text>
+      <text x="145" y="147" text-anchor="middle" font-family="Space Mono, monospace" font-size="9.5" fill="currentColor" opacity="0.75">mediamtx + reader</text>
+
+      <line x1="145" y1="155" x2="145" y2="178" stroke="currentColor" stroke-width="1.1" marker-end="url(#ar1)"/>
+
+      <rect x="35" y="180" width="220" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="201" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" fill="currentColor">src_cascade</text>
+      <text x="270" y="200" text-anchor="end" font-family="Space Mono, monospace" font-size="9" fill="currentColor" opacity="0.7">publish &middot; direct</text>
+
+      <line x1="145" y1="214" x2="145" y2="233" stroke="currentColor" stroke-width="1.1" marker-end="url(#ar1)"/>
+
+      <rect x="35" y="235" width="220" height="42" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="253" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" font-weight="600" fill="currentColor">Broker A</text>
+      <text x="145" y="268" text-anchor="middle" font-family="Space Mono, monospace" font-size="9.5" fill="currentColor" opacity="0.75">topic s/v/c01</text>
+
+      <line x1="145" y1="277" x2="145" y2="292" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+      <rect x="35" y="294" width="220" height="36" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="145" y="313" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" fill="currentColor">bridge-to-b</text>
+      <text x="145" y="325" text-anchor="middle" font-family="Space Mono, monospace" font-size="9" fill="currentColor" opacity="0.75">queue &middot; sub s/v/c01/&gt;</text>
+
+      <rect x="370" y="15" width="200" height="380" fill="none" style="stroke:var(--warn)" stroke-width="1.4"/>
+      <text x="470" y="10" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" font-weight="600" style="fill:var(--warn)">SHAPER</text>
+
+      <polygon points="405,175 495,175 480,220 420,220" fill="none" style="stroke:var(--warn)" stroke-width="1.2"/>
+      <text x="450" y="167" text-anchor="middle" font-family="Space Mono, monospace" font-size="10.5" style="fill:var(--warn)">netem queue &middot; 768 kbit</text>
+
+      <line x1="257" y1="52" x2="403" y2="182" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar1)"/>
+      <text x="300" y="105" text-anchor="middle" font-family="Space Mono, monospace" font-size="9.5" fill="currentColor">UDP :5004</text>
+
+      <line x1="257" y1="252" x2="403" y2="212" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar1)"/>
+      <text x="300" y="245" text-anchor="middle" font-family="Space Mono, monospace" font-size="9.5" fill="currentColor">SMF bridge</text>
+
+      <line x1="470" y1="285" x2="470" y2="222" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar1)"/>
+      <text x="470" y="300" text-anchor="middle" font-family="Space Mono, monospace" font-size="10" fill="currentColor">iperf3 flood</text>
+
+      <line x1="497" y1="182" x2="588" y2="52" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar1)"/>
+      <line x1="482" y1="212" x2="588" y2="252" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar1)"/>
+
+      <path d="M 418,220 C 340,270 260,300 258,312" fill="none" style="stroke:var(--accent)" stroke-width="1.6" marker-end="url(#arA1)"/>
+      <text x="330" y="290" text-anchor="middle" font-family="Space Mono, monospace" font-size="10.5" font-weight="600" style="fill:var(--accent)">retry until delivered</text>
+
+      <rect x="590" y="15" width="260" height="410" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>
+      <text x="720" y="10" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" letter-spacing="0.08em" fill="currentColor" opacity="0.75">RECEIVER SUBNET</text>
+
+      <rect x="605" y="35" width="230" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="720" y="56" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" fill="currentColor">ffplay &mdash; Direct UDP</text>
+
+      <rect x="605" y="235" width="230" height="42" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="720" y="253" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" font-weight="600" fill="currentColor">Broker B</text>
+      <text x="720" y="268" text-anchor="middle" font-family="Space Mono, monospace" font-size="9.5" fill="currentColor" opacity="0.75">bridge bound to bridge-to-b</text>
+
+      <line x1="720" y1="277" x2="720" y2="296" stroke="currentColor" stroke-width="1.1" marker-end="url(#ar1)"/>
+      <rect x="605" y="298" width="230" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="720" y="319" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" fill="currentColor">sink_cascade</text>
+
+      <line x1="720" y1="332" x2="720" y2="351" stroke="currentColor" stroke-width="1.1" marker-end="url(#ar1)"/>
+      <rect x="605" y="353" width="230" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="720" y="374" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" fill="currentColor">ffplay &mdash; Via Solace</text>
+    </svg>
+    <figcaption>Two flows share one shaped interface. <code>ffmpeg</code> goes straight over UDP with no recovery &mdash; a dropped packet is gone. <code>src_cascade</code> publishes direct to the local Broker A; its <code>bridge-to-b</code> queue promotes that traffic to guaranteed and is what actually crosses the shaper, retrying delivery to Broker B until it lands, before <code>sink_cascade</code> hands it back to a second viewer.</figcaption>
+  </figure>
+
+  <hr class="divider">
+
+  <span class="part-label">Part Two</span>
+  <h2 class="part-title">Sensor Fusion</h2>
+  <p class="part-dek">Same skeleton, smaller payload, sharper stakes: a synthetic drone-track generator standing in for a 5G network-sensing site, publishing over MQTT to the same Broker A, with its own bridge queue so it never shares a spool with video.</p>
+
+  <figure>
+    <svg viewBox="0 0 860 260" role="img" aria-label="A synthetic drone-track generator publishes MQTT alerts direct to Broker A. A second bridge queue, bridge-sensor-to-b, promotes them to guaranteed and carries them across the same shaped, flooded shaper to Broker B, which hands them to a fusion viewer standing in for a command center.">
+      <defs>
+        <marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><polygon points="0,0 7,3 0,6" fill="currentColor"/></marker>
+        <marker id="arA2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><polygon points="0,0 7,3 0,6" style="fill:var(--accent)"/></marker>
+      </defs>
+
+      <rect x="10" y="15" width="240" height="230" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>
+      <text x="130" y="10" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" letter-spacing="0.08em" fill="currentColor" opacity="0.75">SOURCE SUBNET</text>
+
+      <rect x="30" y="35" width="200" height="40" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="130" y="53" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" fill="currentColor">track_gen.sh</text>
+      <text x="130" y="68" text-anchor="middle" font-family="Space Mono, monospace" font-size="9.5" fill="currentColor" opacity="0.75">site1 &middot; 1 update/sec</text>
+
+      <line x1="130" y1="75" x2="130" y2="98" stroke="currentColor" stroke-width="1.1" marker-end="url(#ar2)"/>
+      <text x="205" y="90" text-anchor="end" font-family="Space Mono, monospace" font-size="9" fill="currentColor" opacity="0.7">MQTT :1883, QoS 0</text>
+
+      <rect x="30" y="100" width="200" height="42" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="130" y="118" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" font-weight="600" fill="currentColor">Broker A</text>
+      <text x="130" y="133" text-anchor="middle" font-family="Space Mono, monospace" font-size="9.5" fill="currentColor" opacity="0.75">topic sensor/track/site1</text>
+
+      <line x1="130" y1="142" x2="130" y2="157" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+      <rect x="30" y="159" width="200" height="36" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="130" y="178" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" fill="currentColor">bridge-sensor-to-b</text>
+      <text x="130" y="190" text-anchor="middle" font-family="Space Mono, monospace" font-size="9" fill="currentColor" opacity="0.75">queue &middot; sub sensor/track/&gt;</text>
+
+      <rect x="340" y="15" width="180" height="200" fill="none" style="stroke:var(--warn)" stroke-width="1.4"/>
+      <text x="430" y="10" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" font-weight="600" style="fill:var(--warn)">SHAPER</text>
+
+      <polygon points="375,95 485,95 470,140 390,140" fill="none" style="stroke:var(--warn)" stroke-width="1.2"/>
+      <text x="430" y="87" text-anchor="middle" font-family="Space Mono, monospace" font-size="10.5" style="fill:var(--warn)">netem queue &middot; 768 kbit</text>
+
+      <line x1="232" y1="117" x2="373" y2="112" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+      <text x="300" y="103" text-anchor="middle" font-family="Space Mono, monospace" font-size="9.5" fill="currentColor">SMF bridge</text>
+
+      <line x1="430" y1="200" x2="430" y2="142" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+      <text x="430" y="215" text-anchor="middle" font-family="Space Mono, monospace" font-size="10" fill="currentColor">iperf3 flood</text>
+
+      <line x1="487" y1="112" x2="608" y2="117" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+
+      <path d="M 392,140 C 330,175 250,180 232,180" fill="none" style="stroke:var(--accent)" stroke-width="1.6" marker-end="url(#arA2)"/>
+      <text x="300" y="168" text-anchor="middle" font-family="Space Mono, monospace" font-size="10.5" font-weight="600" style="fill:var(--accent)">retry until delivered</text>
+
+      <rect x="610" y="15" width="230" height="200" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>
+      <text x="725" y="10" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" letter-spacing="0.08em" fill="currentColor" opacity="0.75">RECEIVER SUBNET</text>
+
+      <rect x="625" y="100" width="200" height="42" style="fill:var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+      <text x="725" y="118" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" font-weight="600" fill="currentColor">Broker B</text>
+      <text x="725" y="133" text-anchor="middle" font-family="Space Mono, monospace" font-size="9.5" fill="currentColor" opacity="0.75">bridge bound to bridge-sensor-to-b</text>
+
+      <line x1="725" y1="100" x2="725" y2="80" stroke="currentColor" stroke-width="1.1" marker-end="url(#ar2)"/>
+      <rect x="625" y="38" width="200" height="38" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <text x="725" y="57" text-anchor="middle" font-family="Space Mono, monospace" font-size="12" fill="currentColor">fusion viewer</text>
+      <text x="725" y="69" text-anchor="middle" font-family="Space Mono, monospace" font-size="9" fill="currentColor" opacity="0.75">mosquitto_sub</text>
+    </svg>
+    <figcaption>The mechanism is identical to Part One, just lighter: a fire-and-forget MQTT publish, a queue that promotes it to guaranteed, a bridge that retries until it lands. Unlike a frozen video frame, a track update held here and delivered late is the difference between a delayed alert and a missed one.</figcaption>
+  </figure>
+
+  <div class="compare">
+    <span class="tag">What's the same, what's different</span>
+    Same shaper, same 768&nbsp;kbit cap, same promotion-and-bridge mechanism. What changes between the two parts is only the topic, the queue name, and the transport the client uses to publish (SMF direct vs. MQTT QoS&nbsp;0) &mdash; the broker doesn't care which; both get promoted the same way.
+  </div>
+
+  <footer>
+    Redrawn for Tactical Field Manual Rev. 3. Retired: the prior version of this artifact, which showed BroadcastMe's InputProxy/OutputProxy over a bare bridge subscription rather than an explicit bridge queue.
+  </footer>
+</div>

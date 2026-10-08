@@ -1,0 +1,226 @@
+<title>Tactical Range Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#093B5F;
+    --panel:#03213B;
+    --ink:#FFFFFF;
+    --muted:#D6D6D6;
+    --line:#D6D6D6;
+    --accent:#00C895;
+    --chip-bg:#03213B;
+    --chip-ink:#00C895;
+    --console-bg:#03213B;
+    --console-ink:#00C895;
+    --console-accent:#ABFF88;
+    --console-line:#093B5F;
+    --say-bg:#C2F7FF;
+    --say-ink:#093B5F;
+    --do-bg:#C7FFCB;
+    --do-ink:#093B5F;
+    --font-display:"Calibri", "Aptos", "Georgia", serif;
+    --font-body:"Figtree", -apple-system, "Segoe UI", sans-serif;
+    --font-mono:"Space Mono", "SF Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#03213B; --panel:#093B5F; --ink:#FFFFFF; --muted:#D6D6D6;
+      --line:#D6D6D6; --accent:#ABFF88; --chip-bg:#093B5F; --chip-ink:#ABFF88;
+      --console-bg:#03213B; --console-ink:#00C895; --console-accent:#ABFF88; --console-line:#093B5F;
+      --say-bg:#C2F7FF; --say-ink:#093B5F; --do-bg:#C7FFCB; --do-ink:#093B5F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#03213B; --panel:#093B5F; --ink:#FFFFFF; --muted:#D6D6D6;
+    --line:#D6D6D6; --accent:#ABFF88; --chip-bg:#093B5F; --chip-ink:#ABFF88;
+    --console-bg:#03213B; --console-ink:#00C895; --console-accent:#ABFF88; --console-line:#093B5F;
+    --say-bg:#C2F7FF; --say-ink:#093B5F; --do-bg:#C7FFCB; --do-ink:#093B5F;
+  }
+
+  *{box-sizing:border-box;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-body);
+    font-size:16px;line-height:1.6;margin:0;padding:0 20px 96px;}
+  .wrap{max-width:760px;margin:0 auto;}
+
+  h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:0.01em;
+    text-wrap:balance;margin:0;}
+
+  .kicker{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--chip-ink);background:var(--chip-bg);
+    display:inline-block;padding:4px 10px;margin:40px 0 16px;}
+
+  h1.title{font-size:clamp(32px,5.5vw,50px);line-height:0.98;margin-bottom:14px;}
+  .dek{color:var(--muted);font-size:17px;max-width:60ch;margin-bottom:18px;}
+  .lineage{font-size:14px;color:var(--muted);margin-bottom:28px;}
+  .lineage a{color:var(--ink);}
+
+  .ops-block{border:1px solid var(--line);background:var(--panel);padding:22px 24px;
+    display:grid;grid-template-columns:1fr 1fr;gap:16px 28px;margin-bottom:40px;}
+  .ops-field dt{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+  .ops-field dd{margin:0;font-size:15px;}
+  .ops-field{margin:0;}
+
+  .timeline{display:flex;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    margin:0 0 48px;overflow-x:auto;}
+  .timeline .seg{flex:1 0 auto;min-width:84px;padding:10px 12px;border-left:1px solid var(--line);}
+  .timeline .seg:first-child{border-left:none;}
+  .timeline .seg .hr{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.04em;}
+  .timeline .seg .lbl{font-size:12px;font-weight:600;margin-top:2px;}
+
+  .checklist{list-style:none;margin:16px 0 40px;padding:0;}
+  .checklist li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14.5px;}
+  .checklist li::before{content:"";flex:0 0 auto;width:14px;height:14px;margin-top:3px;
+    border:1.5px solid var(--muted);}
+
+  p{margin:14px 0;}
+  strong{font-weight:600;}
+  code.inline{font-family:var(--font-mono);font-size:0.9em;background:var(--panel);
+    border:1px solid var(--line);padding:1px 5px;}
+  a{color:inherit;}
+
+  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;
+    margin:20px 0;font-size:14.5px;}
+  .callout .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--accent);display:block;margin-bottom:4px;}
+
+  section.beat{margin:52px 0;}
+  .beat-head{display:flex;align-items:baseline;gap:16px;border-bottom:1px solid var(--line);
+    padding-bottom:12px;margin-bottom:18px;}
+  .beat-time{font-family:var(--font-mono);font-weight:700;font-size:22px;color:var(--accent);
+    letter-spacing:0.02em;white-space:nowrap;}
+  .beat-title{font-size:23px;}
+  .beat-obj{color:var(--muted);font-size:14.5px;margin:-6px 0 20px;max-width:58ch;}
+
+  .line{display:flex;gap:14px;margin:10px 0;align-items:flex-start;}
+  .line .who{flex:0 0 44px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;
+    text-transform:uppercase;text-align:center;padding:3px 0;margin-top:2px;}
+  .line.say .who{background:var(--say-bg);color:var(--say-ink);}
+  .line.do .who{background:var(--do-bg);color:var(--do-ink);}
+  .line .txt{flex:1 1 auto;font-size:15px;padding-top:1px;}
+  .line.say .txt{font-style:italic;}
+  .line.do .txt{color:var(--muted);}
+
+  table.ports{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+  table.ports th, table.ports td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);
+    font-variant-numeric:tabular-nums;}
+  table.ports th{font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--muted);font-weight:500;}
+
+  .qa{margin:18px 0;border:1px solid var(--line);background:var(--panel);}
+  .qa + .qa{border-top:none;}
+  .qa .q{display:flex;gap:10px;padding:12px 16px 8px;font-weight:600;font-size:15px;}
+  .qa .q .mark{font-family:var(--font-display);font-weight:800;color:var(--accent);font-size:18px;line-height:1.1;}
+  .qa .a{padding:0 16px 14px 40px;font-size:14.5px;color:var(--muted);}
+
+  footer{margin-top:70px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;}
+</style>
+
+<div class="wrap">
+
+  <span class="kicker">Run of Show &middot; 15 Min + Q&amp;A &middot; Rev. 3 Demo</span>
+  <h1 class="title">Tactical Range Card</h1>
+  <p class="dek">Reference points and timing for presenting the video demo &mdash; not setup. Walk in with everything already running: both brokers up, both cascades publishing, both VLC windows open side by side, shaping already active.</p>
+  <p class="lineage">Companion to <a href="https://claude.ai/code/artifact/dea95bf9-dfcc-43c1-9583-26f14e414855">Tactical Field Manual</a> (build and troubleshoot from it) and <a href="https://claude.ai/code/artifact/fef24f21-cb91-450e-8e8e-5d5093a25214">Tactical Relay Diagrams</a> (show the architecture if asked how it works). This card is for the room, not the rig.</p>
+
+  <dl class="ops-block">
+    <div class="ops-field"><dt>Duration</dt><dd>15:00 total &mdash; roughly 8 minutes scripted, 7 minutes open Q&amp;A</dd></div>
+    <div class="ops-field"><dt>Opening state</dt><dd>Shaping already <strong>on</strong> before anyone walks in &mdash; Direct UDP already struggling, Via Solace already clean</dd></div>
+    <div class="ops-field"><dt>Turning point</dt><dd>Remove shaping live, on camera, as the trust moment &mdash; not before it</dd></div>
+    <div class="ops-field"><dt>Fallback</dt><dd>If a window won't render, narrate from the terminal log &mdash; the decode errors are the evidence either way</dd></div>
+  </dl>
+
+  <div class="timeline">
+    <div class="seg"><div class="hr">0:00</div><div class="lbl">Cold open</div></div>
+    <div class="seg"><div class="hr">0:45</div><div class="lbl">What you're looking at</div></div>
+    <div class="seg"><div class="hr">3:15</div><div class="lbl">Why one froze</div></div>
+    <div class="seg"><div class="hr">5:15</div><div class="lbl">Trust reveal</div></div>
+    <div class="seg"><div class="hr">7:00</div><div class="lbl">Close</div></div>
+    <div class="seg"><div class="hr">8:00</div><div class="lbl">Q&amp;A</div></div>
+  </div>
+
+  <p class="kicker" style="margin-top:0;">Before they walk in</p>
+  <ul class="checklist">
+    <li>Both <code class="inline">cvlc</code> windows open, dragged side by side, labeled in your head as "Direct UDP" (left) / "Via Solace" (right)</li>
+    <li><code class="inline">tc -s qdisc show dev $IFACE</code> confirmed active on the shaper &mdash; you want Direct UDP already frozen when eyes land on the screen</li>
+    <li>A terminal on the shaper instance already SSH'd in and idle, <code class="inline">tc qdisc del dev $IFACE root</code> typed but not yet sent &mdash; this is your reveal button</li>
+    <li>Screen share includes both VLC windows in frame; nothing else on that display</li>
+  </ul>
+
+  <section class="beat">
+    <div class="beat-head"><span class="beat-time">0:00</span><span class="beat-title">Cold Open</span></div>
+    <p class="beat-obj">No preamble. The contrast is the hook &mdash; let it sit on screen a beat before anyone says anything.</p>
+    <div class="line do"><span class="who">do</span><span class="txt">Share the screen. Both windows already visible, already in their current state. Pause for two full seconds before speaking.</span></div>
+    <div class="line say"><span class="who">say</span><span class="txt">"Same source video, same network, same instant. One side's frozen. One isn't. Let me show you why."</span></div>
+  </section>
+
+  <section class="beat">
+    <div class="beat-head"><span class="beat-time">0:45</span><span class="beat-title">What You're Looking At</span></div>
+    <p class="beat-obj">Establish the two paths without diving into ports and topics yet.</p>
+    <div class="line say"><span class="who">say</span><span class="txt">"Both windows are playing the exact same video, from the exact same source machine, over the exact same degraded link right now &mdash; think a tactical radio link, or any connection that's lossy and jittery, not fully down."</span></div>
+    <div class="line say"><span class="who">say</span><span class="txt">"Left is the video sent the ordinary way: straight UDP, fire and forget, no broker involved. Right is the same video, published into a Solace PubSub+ broker, bridged across that same degraded link to a second broker, and served back out as RTSP."</span></div>
+    <div class="line do"><span class="who">do</span><span class="txt">Gesture left, then right, on those two lines. Don't open a terminal yet.</span></div>
+  </section>
+
+  <section class="beat">
+    <div class="beat-head"><span class="beat-time">3:15</span><span class="beat-title">Why One Froze</span></div>
+    <p class="beat-obj">The mechanism, in one breath, not a protocol lecture.</p>
+    <div class="line say"><span class="who">say</span><span class="txt">"UDP has no memory. Once a packet's gone, it's gone &mdash; the decoder hits a hole it can't fill and just gives up. That's the freeze."</span></div>
+    <div class="line say"><span class="who">say</span><span class="txt">"Solace's connection to the broker runs over plain TCP underneath. TCP already knows how to notice a gap and ask for it again &mdash; transparently, before the video layer ever sees a problem. Nothing custom-built for video; it's just what TCP always does."</span></div>
+    <div class="line do"><span class="who">do</span><span class="txt">Optional, if there's a Manager UI tab open: point at the bridge queue's message count still climbing steadily. Don't dwell &mdash; keep this segment under two minutes.</span></div>
+  </section>
+
+  <section class="beat">
+    <div class="beat-head"><span class="beat-time">5:15</span><span class="beat-title">The Trust Reveal</span></div>
+    <p class="beat-obj">This is the moment that turns skepticism into buy-in &mdash; earn it by doing it live, not by claiming it.</p>
+    <div class="line say"><span class="who">say</span><span class="txt">"Just so you know we're not fooling you &mdash; here's the same link, with the degradation switched off."</span></div>
+    <div class="line do"><span class="who">do</span><span class="txt">Switch to the shaper terminal. Send the prepared <code class="inline">tc qdisc del dev $IFACE root</code>. Switch back to the screen share.</span></div>
+    <div class="line say"><span class="who">say</span><span class="txt">"Watch the left side recover."</span></div>
+    <div class="line do"><span class="who">do</span><span class="txt">Let it play clean for a few seconds. Both windows now look equally good &mdash; that's the point, not a letdown.</span></div>
+    <div class="callout">
+      <span class="tag">If asked why bother, then</span>
+      "Because on a clean link, plain UDP is actually the better choice &mdash; lighter, lower latency, nothing extra in the way. Solace's overhead only earns its keep once the link stops being clean. That's the trade you're making, and it's a deliberate one."
+    </div>
+  </section>
+
+  <section class="beat">
+    <div class="beat-head"><span class="beat-time">7:00</span><span class="beat-title">Close</span></div>
+    <p class="beat-obj">One line, then stop talking and open the floor.</p>
+    <div class="line say"><span class="who">say</span><span class="txt">"Denied, intermittent, low-bandwidth links aren't hypothetical for a lot of you &mdash; this is what the difference actually looks like when it's real, not a spec sheet."</span></div>
+    <div class="line do"><span class="who">do</span><span class="txt">Re-run the shaper command from the Field Manual if you want the contrast visible again during Q&amp;A. Otherwise leave both windows clean and move to questions.</span></div>
+  </section>
+
+  <section class="beat">
+    <div class="beat-head"><span class="beat-time">8:00</span><span class="beat-title">Q&amp;A &mdash; Prepared Ground</span></div>
+    <p class="beat-obj">Five questions this room is likely to ask, answered from what was actually measured, not the brochure version.</p>
+
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span>Is Solace just running its own version of UDP under the hood?</div>
+      <div class="a">No &mdash; the client's connection to the broker, and the bridge between brokers, both run over plain TCP. The resilience you saw isn't a Solace-specific trick; it's TCP doing what TCP always does, with Solace's guaranteed-message handling layered on top for the parts that need to survive a full outage, not just jitter.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span>What if the link doesn't just degrade &mdash; it goes fully dark?</div>
+      <div class="a">Different mechanism, same underlying answer: messages published as guaranteed get spooled in a durable queue and redelivered once the link's back, so nothing published during the outage is lost. A live video subscriber just resumes in real time once reconnected rather than replaying the gap &mdash; the queue is what gives you the option to replay, if that's what the use case needs.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span>Doesn't all this cost you something when the link is fine?</div>
+      <div class="a">Yes, honestly &mdash; you just saw it. Direct UDP has less overhead and no broker hop, so on a clean link it's the leaner choice. The trade only pays off once the link degrades, which is exactly the scenario this demo is built to show.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span>Could the queue itself fill up and start dropping messages?</div>
+      <div class="a">Yes &mdash; it has a spool quota, sized deliberately rather than left at a default. That's a real, tunable ceiling on how long a catch-up buffer can absorb an outage before something has to give, and it's worth sizing to the outage durations you actually expect.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span>Is this demo staged &mdash; is the frozen video a canned clip?</div>
+      <div class="a">That's exactly what the trust reveal a few minutes ago was for. The shaping was removed live, on the same running link, and the frozen side recovered in real time. Happy to do it again.</div>
+    </div>
+  </section>
+
+  <footer>
+    Rev. 3 run-of-show card. Ordering is deliberate: open already-shaped so the contrast is the hook, not a wind-up; remove shaping live mid-demo, not at setup, so its removal reads as proof rather than a formality. If time is short, the Trust Reveal beat is the one segment worth protecting &mdash; it's what turns "nice demo" into "I believe this."
+  </footer>
+
+</div>

@@ -1,0 +1,440 @@
+<title>Tactical Bridge Runbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#03213B;
+    --panel:#093B5F;
+    --ink:#FFFFFF;
+    --muted:#EAEAEA;
+    --line:#009193;
+    --accent:#00C895;
+    --accent-ink:#03213B;
+    --accent-soft:#093B5F;
+    --chip-bg:#093B5F;
+    --chip-ink:#00C895;
+    --console-bg:#03213B;
+    --console-ink:#ABFF88;
+    --console-accent:#ABFF88;
+    --console-line:#093B5F;
+    --font-display:Calibri, Aptos, Georgia, serif;
+    --font-body:Figtree, "Segoe UI", sans-serif;
+    --font-mono:"Space Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#03213B; --panel:#093B5F; --ink:#FFFFFF; --muted:#EAEAEA;
+      --line:#009193; --accent:#00C895; --accent-ink:#03213B; --accent-soft:#093B5F;
+      --chip-bg:#093B5F; --chip-ink:#00C895;
+      --console-bg:#03213B; --console-ink:#ABFF88; --console-accent:#ABFF88; --console-line:#093B5F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#03213B; --panel:#093B5F; --ink:#FFFFFF; --muted:#EAEAEA;
+    --line:#009193; --accent:#00C895; --accent-ink:#03213B; --accent-soft:#093B5F;
+    --chip-bg:#093B5F; --chip-ink:#00C895;
+    --console-bg:#03213B; --console-ink:#ABFF88; --console-accent:#ABFF88; --console-line:#093B5F;
+  }
+
+  *{box-sizing:border-box;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-body);
+    font-size:16px;line-height:1.6;margin:0;padding:0 20px 96px;}
+  .wrap{max-width:760px;margin:0 auto;}
+
+  h1,h2{font-family:var(--font-display);font-weight:800;letter-spacing:0.01em;
+    text-wrap:balance;margin:0;}
+  h3,h4,h5{font-family:var(--font-body);font-weight:700;letter-spacing:0.01em;
+    text-wrap:balance;margin:0;}
+
+  .kicker{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--chip-ink);background:var(--chip-bg);
+    display:inline-block;padding:4px 10px;margin:40px 0 16px;}
+
+  h1.title{font-size:clamp(32px,5.5vw,48px);line-height:0.98;margin-bottom:14px;}
+  .dek{color:var(--muted);font-size:17px;max-width:58ch;margin-bottom:18px;}
+  .lineage{font-size:14px;color:var(--muted);margin-bottom:28px;}
+  .lineage a{color:var(--ink);}
+
+  .ops-block{border:1px solid var(--line);background:var(--panel);padding:22px 24px;
+    display:grid;grid-template-columns:1fr 1fr;gap:16px 28px;margin-bottom:40px;}
+  .ops-field dt{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:4px;}
+  .ops-field dd{margin:0;font-size:15px;}
+  .ops-field{margin:0;}
+
+  .timeline{display:flex;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    margin:0 0 48px;overflow-x:auto;}
+  .timeline .seg{flex:1 0 auto;min-width:88px;padding:10px 12px;border-left:1px solid var(--line);}
+  .timeline .seg:first-child{border-left:none;}
+  .timeline .seg .hr{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.04em;}
+  .timeline .seg .lbl{font-size:12.5px;font-weight:600;margin-top:2px;}
+
+  section.phase{margin:56px 0;}
+  .phase-head{display:flex;align-items:baseline;gap:16px;border-bottom:1px solid var(--line);
+    padding-bottom:12px;margin-bottom:18px;}
+  .phase-num{font-family:var(--font-display);font-weight:800;font-size:44px;color:var(--accent);line-height:1;}
+  .phase-title{font-size:24px;font-family:var(--font-display);}
+  .phase-obj{color:var(--muted);font-size:15px;margin:-6px 0 20px;max-width:58ch;}
+
+  p{margin:14px 0;}
+  ul.steps, ol.steps{margin:14px 0;padding-left:22px;}
+  ul.steps li, ol.steps li{margin:8px 0;}
+  strong{font-weight:600;}
+  code.inline{font-family:var(--font-mono);font-size:0.9em;background:var(--panel);
+    border:1px solid var(--line);padding:1px 5px;}
+
+  .cmd{margin:18px 0;border:1px solid var(--console-line);}
+  .cmd-bar{display:flex;justify-content:space-between;align-items:center;
+    background:var(--console-line);padding:6px 10px;}
+  .cmd-host{font-family:var(--font-mono);font-size:12px;color:var(--console-accent);letter-spacing:0.03em;}
+  .copy-btn{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;
+    background:transparent;border:1px solid var(--console-accent);color:var(--console-accent);
+    padding:3px 9px;cursor:pointer;}
+  .copy-btn:hover{background:var(--console-accent);color:var(--console-bg);}
+  .copy-btn:focus-visible, a:focus-visible, button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .cmd pre{margin:0;background:var(--console-bg);color:var(--console-ink);padding:14px 16px;
+    overflow-x:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.55;}
+  .cmd pre code{white-space:pre;}
+
+  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;
+    margin:20px 0;font-size:14.5px;}
+  .callout .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--accent);display:block;margin-bottom:4px;}
+
+  .checklist{list-style:none;margin:16px 0;padding:0;}
+  .checklist li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14.5px;}
+  .checklist li::before{content:"";flex:0 0 auto;width:14px;height:14px;margin-top:3px;
+    border:1.5px solid var(--muted);}
+
+  table.ports{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+  table.ports th, table.ports td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);
+    font-variant-numeric:tabular-nums;}
+  table.ports th{font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--accent);font-weight:500;}
+
+  footer{margin-top:70px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;}
+
+  @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+</style>
+
+<div class="wrap">
+
+  <span class="kicker">AWS + Solace &middot; Extends the Base Runbook</span>
+  <h1 class="title">Tactical Bridge Runbook</h1>
+  <p class="dek">The same shaped, flooded link from the base runbook, now carrying a second pipeline: video bridged through two Solace PubSub+ brokers. Run both at once and the flood hits them identically &mdash; one freezes for good, the other stalls and catches up.</p>
+  <p class="lineage">Builds on <a href="https://claude.ai/code/artifact/68fbb134-cc5e-495a-ac06-9dcb92f85e62">Tactical Link Runbook</a> and <a href="https://claude.ai/code/artifact/fef24f21-cb91-450e-8e8e-5d5093a25214">Tactical Relay Diagrams</a>. The base runbook's VPC, subnets, routing, and shaper are reused as-is &mdash; nothing there gets rebuilt.</p>
+
+  <dl class="ops-block">
+    <div class="ops-field"><dt>Objective</dt><dd>Run direct UDP and a Solace-bridged path side by side over the same link; show one freeze permanently and the other recover.</dd></div>
+    <div class="ops-field"><dt>Platform</dt><dd>Same VPC &mdash; source &amp; receiver bumped to t3.medium, two Solace PubSub+ Standard brokers (Docker), BroadcastMe</dd></div>
+    <div class="ops-field"><dt>Method</dt><dd>InputProxy/OutputProxy encapsulate UDP in SMF; a broker-to-broker bridge carries persistent messages across the shaped link</dd></div>
+    <div class="ops-field"><dt>Teardown</dt><dd>Stop the broker containers and proxies; the base runbook's AWS teardown handles the rest unchanged</dd></div>
+  </dl>
+
+  <div class="timeline">
+    <div class="seg"><div class="hr">HR 0&ndash;1</div><div class="lbl">Provision deltas</div></div>
+    <div class="seg"><div class="hr">HR 1&ndash;2</div><div class="lbl">Route + shape</div></div>
+    <div class="seg"><div class="hr">HR 2&ndash;3</div><div class="lbl">Stand up brokers</div></div>
+    <div class="seg"><div class="hr">HR 3&ndash;4</div><div class="lbl">Bridge them</div></div>
+    <div class="seg"><div class="hr">HR 4&ndash;5</div><div class="lbl">Build BroadcastMe</div></div>
+    <div class="seg"><div class="hr">HR 5&ndash;6</div><div class="lbl">Wire both paths</div></div>
+    <div class="seg"><div class="hr">HR 6&ndash;7</div><div class="lbl">Inject &amp; compare</div></div>
+    <div class="seg"><div class="hr">HR 7&ndash;8</div><div class="lbl">Rehearse &amp; buffer</div></div>
+  </div>
+
+  <!-- PHASE 00 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">00</span><span class="phase-title">Provision (deltas only)</span></div>
+    <p class="phase-obj">Everything in the base runbook's Phase 00 &mdash; the VPC, three subnets, security group &mdash; stays exactly as built. Two things change before you launch.</p>
+
+    <div class="callout">
+      <span class="tag">Delta 1 &mdash; instance size</span>
+      A broker JVM running alongside ffmpeg, InputProxy/OutputProxy, and iperf3 needs more headroom than the base demo did. Launch <strong>source</strong> and <strong>receiver</strong> as <code class="inline">t3.medium</code> instead of <code class="inline">t3.small</code>. The <strong>shaper</strong> stays <code class="inline">t3.small</code> &mdash; it never runs Java or Docker, only <code class="inline">tc</code>.
+    </div>
+
+    <p>If the base runbook's instances are still running, the fastest path is to terminate just <code class="inline">$INSTANCE_SRC</code> and <code class="inline">$INSTANCE_RCV</code> and relaunch them with the bumped instance type, reusing the same subnets, security group, and AMI lookup already captured in your shell environment.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>launch() { aws ec2 run-instances --image-id $AMI_ID --instance-type t3.medium \
+  --key-name $KEY_NAME --subnet-id $1 --security-group-ids $SG_ID \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$2}]" \
+  --query 'Instances[0].InstanceId' --output text --region $AWS_REGION; }
+
+export INSTANCE_SRC=$(launch $SUBNET_SRC dil-source)
+export INSTANCE_RCV=$(launch $SUBNET_RCV dil-receiver)
+aws ec2 wait instance-running --instance-ids $INSTANCE_SRC $INSTANCE_RCV --region $AWS_REGION</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Delta 2 &mdash; extra packages</span>
+      Source and receiver both need Docker (to run a broker) and a JDK (to build and run BroadcastMe). Neither is needed on the shaper.
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source + receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo apt-get update
+sudo apt-get install -y docker.io openjdk-17-jdk git
+sudo usermod -aG docker $USER
+# log out and back in (or `newgrp docker`) for the group change to take effect</code></pre>
+    </div>
+  </section>
+
+  <!-- PHASE 01 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">01</span><span class="phase-title">Route + shape (unchanged, one number)</span></div>
+    <p class="phase-obj">The route-forcing trick from the base runbook's Phase 01 is untouched &mdash; re-run it if you relaunched the source/receiver instances, since new instances get new ENIs. The only change is the shaper's bandwidth cap.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export IP_SRC_PRIV=10.0.1.x   # from describe-instances
+export IP_RCV_PRIV=10.0.3.x
+
+aws ec2 create-route --route-table-id $RTB_SRC --destination-cidr-block ${IP_RCV_PRIV}/32 \
+  --network-interface-id $ENI_SHAPE --region $AWS_REGION
+aws ec2 create-route --route-table-id $RTB_RCV --destination-cidr-block ${IP_SRC_PRIV}/32 \
+  --network-interface-id $ENI_SHAPE --region $AWS_REGION</code></pre>
+    </div>
+
+    <p>256&nbsp;kbit was sized for one video stream. Running the direct path and the Solace path at once means two video-bearing flows sharing the pipe before the flood even starts &mdash; at 256&nbsp;kbit they'd starve each other and muddy the demo. Raise the ceiling so the flood, not ordinary contention, is what causes the freeze:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo tc qdisc add dev eth0 root handle 1: htb default 10
+sudo tc class add dev eth0 parent 1: classid 1:10 htb rate 768kbit ceil 768kbit
+sudo tc qdisc add dev eth0 parent 1:10 handle 10: netem \
+  delay 100ms 20ms distribution normal loss 2% 25%</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Why 768 kbit</span>
+      Two ~200&nbsp;kbit video streams plus SMF framing overhead on the Solace path comfortably fit under 768&nbsp;kbit with room to spare. The iperf3 flood in Phase 07 is sized to blow well past that ceiling, so it stays the obvious cause of the freeze rather than ordinary bandwidth-sharing.
+    </div>
+  </section>
+
+  <!-- PHASE 02 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">02</span><span class="phase-title">Stand up two brokers</span></div>
+    <p class="phase-obj">One Solace PubSub+ Standard broker on the source instance, one on the receiver instance &mdash; each reachable locally by its own proxy, and reachable to each other across the shaped link for the bridge in Phase 03.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>docker run -d --name broker-a --shm-size=2g --restart unless-stopped \
+  --env username_admin_globalaccesslevel=admin \
+  --env username_admin_password="${BROKER_ADMIN_PASS}" \
+  -p 55555:55555 -p 8080:8080 \
+  solace/solace-pubsub-standard</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>docker run -d --name broker-b --shm-size=2g --restart unless-stopped \
+  --env username_admin_globalaccesslevel=admin \
+  --env username_admin_password="${BROKER_ADMIN_PASS}" \
+  -p 55555:55555 -p 8080:8080 \
+  solace/solace-pubsub-standard</code></pre>
+    </div>
+
+    <p>Give the container a minute to finish booting, then check each broker's own Broker Manager rather than opening a new security-group hole for port 8080 &mdash; tunnel it over the SSH connection you already have:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ssh -L 8080:localhost:8080 ubuntu@&lt;source-public-ip&gt;
+# then open http://localhost:8080 &mdash; log in as admin/admin</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for</span>
+      Confirm the container's <code class="inline">default</code> message-vpn is enabled for client connections before moving on &mdash; if guest/anonymous access is off in your image version, create a client username in the Broker Manager (VPN &rarr; Client Usernames) rather than fighting it later from InputProxy's connection errors. Exact port list and defaults can shift between image versions &mdash; confirm against Solace's current quick-start docs if anything above doesn't match what you pull.
+    </div>
+  </section>
+
+  <!-- PHASE 03 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">03</span><span class="phase-title">Bridge broker A to broker B</span></div>
+    <p class="phase-obj">This is the hop that matters: a broker-to-broker bridge whose connection runs across the exact same shaped, flooded link everything else in this demo shares.</p>
+
+    <p>From Broker B's Manager (receiver side) &mdash; the consuming side is where the subscription that pulls messages across should live:</p>
+
+    <ol class="steps">
+      <li>Message VPN <code class="inline">default</code> &rarr; <strong>Bridges</strong> &rarr; Create Bridge.</li>
+      <li>Remote broker address: <code class="inline">$IP_SRC_PRIV:55555</code> (Broker A's private IP, reached across the shaper).</li>
+      <li>Remote message VPN: <code class="inline">default</code>. Credentials: the admin user (or a dedicated bridge user if you create one).</li>
+      <li>Add a remote subscription for topic <code class="inline">channel/1</code> &mdash; this is what tells Broker A "forward anything published on this topic to me."</li>
+      <li>Save, then confirm the bridge shows <strong>Up</strong> and the subscription is listed active. It should come up even under load once running &mdash; Solace bridges reconnect and resynchronize automatically after a drop.</li>
+    </ol>
+
+    <div class="callout">
+      <span class="tag">Why the receiver side owns the bridge</span>
+      In pub/sub, demand flows from the consumer. Broker B is the one that wants <code class="inline">channel/1</code>, so it's the one that reaches out and declares that subscription across the bridge. Broker A never needs to know about Broker B in advance &mdash; it just serves whatever subscriptions arrive.
+    </div>
+  </section>
+
+  <!-- PHASE 04 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">04</span><span class="phase-title">Build BroadcastMe</span></div>
+    <p class="phase-obj">The InputProxy/OutputProxy pair from Solace's live-streaming sample &mdash; unmodified. It only needs an argument choice (persistent vs. direct delivery), not a code change.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source + receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>git clone https://github.com/roberthatwork/broadcastme.git
+cd broadcastme
+./gradlew assemble</code></pre>
+    </div>
+
+    <p>Built binaries land in <code class="inline">build/staged/bin/</code> as <code class="inline">inputProxy</code> and <code class="inline">outputProxy</code> on both hosts &mdash; each host only ever runs the one it needs.</p>
+  </section>
+
+  <!-- PHASE 05 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">05</span><span class="phase-title">Wire both paths, side by side</span></div>
+    <p class="phase-obj">Two independent pipelines on the same hosts: the direct path from the base runbook, unchanged, and a second one that goes through the brokers. Both stream the same source clip at once.</p>
+
+    <table class="ports">
+      <tr><th>Path</th><th>Source emits to</th><th>Receiver listens on</th></tr>
+      <tr><td>Direct (base runbook)</td><td><code class="inline">udp://$IP_RCV_PRIV:5004</code></td><td><code class="inline">udp://0.0.0.0:5004</code></td></tr>
+      <tr><td>Via Solace</td><td><code class="inline">udp://localhost:1235</code> (InputProxy)</td><td><code class="inline">udp://0.0.0.0:1239</code> (from OutputProxy)</td></tr>
+    </table>
+
+    <p><strong>Receiver</strong> &mdash; bring up the broker-facing plumbing first, then both viewers:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ (terminal 1)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>./build/staged/bin/outputProxy $IP_RCV_PRIV:55555 default default channel/1 127.0.0.1 1239 verbose</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ (terminal 2)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ffplay -fflags nobuffer udp://0.0.0.0:5004   # Direct UDP window</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $ (terminal 3)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ffplay -fflags nobuffer udp://0.0.0.0:1239   # Via Solace window</code></pre>
+    </div>
+
+    <p>Drag the two ffplay windows side by side (over VNC/RDP, or whatever desktop you're presenting from) and label them &mdash; "Direct UDP" and "Via Solace" &mdash; before anyone's watching.</p>
+
+    <p><strong>Source</strong> &mdash; start InputProxy, then both ffmpeg processes:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ (terminal 1)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>./build/staged/bin/inputProxy $IP_SRC_PRIV:55555 default default channel/1 persistent 1235 verbose</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ (terminal 2)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ffmpeg -re -stream_loop -1 -i clip.mp4 -an -c:v libx264 -preset veryfast \
+  -tune zerolatency -b:v 200k -f mpegts udp://$IP_RCV_PRIV:5004</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ (terminal 3)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ffmpeg -re -stream_loop -1 -i clip.mp4 -an -c:v libx264 -preset veryfast \
+  -tune zerolatency -b:v 150k -f mpegts udp://localhost:1235</code></pre>
+    </div>
+
+    <p>Confirm both windows play clean before touching iperf3 &mdash; slower to start than a single stream would be, but smooth and unbroken in both. If either one isn't clean here, the comparison in Phase 07 won't read clearly.</p>
+
+    <div class="callout">
+      <span class="tag">Known limitation, not a blocker here</span>
+      OutputProxy binds to a <em>temporary</em> queue, which is torn down if its connection to Broker B ever drops. That matters for a full connection blackout on the receiver side &mdash; it doesn't matter for this demo, since the flood in Phase 07 congests the bridge between the brokers, not the receiver's local connection to Broker B. Worth a real durable-queue upgrade before staging the blackout scenario from the base runbook.
+    </div>
+  </section>
+
+  <!-- PHASE 06 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">06</span><span class="phase-title">Inject &amp; compare</span></div>
+    <p class="phase-obj">One flood, started once, hits both pipelines at the same instant &mdash; that simultaneity is the whole argument.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>iperf3 -s</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ (new terminal)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># 10 Mbps against a 768 kbit ceiling &mdash; well past both video streams combined
+iperf3 -c $IP_RCV_PRIV -u -b 10M -t 300</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>watch -n1 tc -s qdisc show dev eth0</code></pre>
+    </div>
+
+    <p>What to expect, and what to point at when it happens: the <strong>Direct UDP</strong> window stalls and stays broken &mdash; those frames are gone. The <strong>Via Solace</strong> window also stalls in real time (that's genuine backpressure, not staged), but once the flood stops the buffered packets held in Broker A's spool flush through as a rapid catch-up burst rather than a permanent gap. Same network event, two different outcomes &mdash; that contrast is the demo.</p>
+  </section>
+
+  <!-- PHASE 07 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">07</span><span class="phase-title">Rehearse &amp; tear down</span></div>
+    <p class="phase-obj">Run it twice end to end before anyone's watching, then know how to shut off everything this phase added.</p>
+
+    <p><strong>Go / no-go, before you present:</strong></p>
+    <ul class="checklist">
+      <li>Bridge shows Up in Broker B's Manager before each run</li>
+      <li>Both windows play clean, side by side, with nothing else running</li>
+      <li>10 Mbps flood visibly freezes the Direct window every time</li>
+      <li>Via-Solace window stalls, then visibly catches up once the flood stops</li>
+      <li><code class="inline">tc</code> rules re-applied if the shaper was stopped/started since Phase 01</li>
+      <li>Recorded a clean backup run, in case the live link misbehaves in front of the audience</li>
+    </ul>
+
+    <p>Tear down this phase's additions first &mdash; the base runbook's AWS teardown script handles the VPC, subnets, and instances unchanged and doesn't need any edits.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>pkill -f inputProxy; pkill -f ffmpeg
+docker stop broker-a && docker rm broker-a</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>pkill -f outputProxy; pkill -f ffplay
+docker stop broker-b && docker rm broker-b</code></pre>
+    </div>
+
+    <p>Then run the base runbook's Phase 05 teardown as-is to remove the instances, security group, route tables, subnets, and VPC.</p>
+  </section>
+
+  <footer>
+    Second document in the series &mdash; the base Tactical Link Runbook stays the "without Solace" reference; this one is "with." Stretch goal if there's schedule room: swap OutputProxy's temporary queue for a durable one so the guarantee also survives a receiver-side disconnect, not just bridge-level congestion.
+  </footer>
+
+</div>
+
+<script>
+document.querySelectorAll('.copy-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var block = btn.closest('.cmd').querySelector('code');
+    var text = block.innerText;
+    function done(){
+      var prev = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(function(){ btn.textContent = prev; }, 1400);
+    }
+    try{
+      navigator.clipboard.writeText(text).then(done).catch(function(){
+        var range = document.createRange();
+        range.selectNodeContents(block);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        done();
+      });
+    }catch(e){
+      try{
+        var range = document.createRange();
+        range.selectNodeContents(block);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        done();
+      }catch(e2){}
+    }
+  });
+});
+</script>

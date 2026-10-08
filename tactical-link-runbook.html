@@ -1,0 +1,666 @@
+<title>Tactical Link Runbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#03213B;
+    --panel:#093B5F;
+    --ink:#FFFFFF;
+    --muted:#EAEAEA;
+    --line:#009193;
+    --accent:#00C895;
+    --accent-ink:#03213B;
+    --accent-soft:#093B5F;
+    --chip-bg:#093B5F;
+    --chip-ink:#00C895;
+    --console-bg:#03213B;
+    --console-ink:#ABFF88;
+    --console-accent:#ABFF88;
+    --console-line:#093B5F;
+    --good:#00C895;
+    --bad:#FCA829;
+    --font-display:Calibri, Aptos, Georgia, serif;
+    --font-body:Figtree, "Segoe UI", sans-serif;
+    --font-mono:"Space Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#03213B;
+      --panel:#093B5F;
+      --ink:#FFFFFF;
+      --muted:#EAEAEA;
+      --line:#009193;
+      --accent:#00C895;
+      --accent-ink:#03213B;
+      --accent-soft:#093B5F;
+      --chip-bg:#093B5F;
+      --chip-ink:#00C895;
+      --console-bg:#03213B;
+      --console-ink:#ABFF88;
+      --console-accent:#ABFF88;
+      --console-line:#093B5F;
+      --good:#00C895;
+      --bad:#FCA829;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#03213B;
+    --panel:#093B5F;
+    --ink:#FFFFFF;
+    --muted:#EAEAEA;
+    --line:#009193;
+    --accent:#00C895;
+    --accent-ink:#03213B;
+    --accent-soft:#093B5F;
+    --chip-bg:#093B5F;
+    --chip-ink:#00C895;
+    --console-bg:#03213B;
+    --console-ink:#ABFF88;
+    --console-accent:#ABFF88;
+    --console-line:#093B5F;
+    --good:#00C895;
+    --bad:#FCA829;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.6;
+    margin:0;
+    padding:0 20px 96px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+
+  h1,h2{
+    font-family:var(--font-display);
+    font-weight:800;
+    letter-spacing:0.01em;
+    text-wrap:balance;
+    margin:0;
+  }
+
+  h3,h4,h5{
+    font-family:var(--font-body);
+    font-weight:700;
+    letter-spacing:0.01em;
+    text-wrap:balance;
+    margin:0;
+  }
+
+  .kicker{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--chip-ink);
+    background:var(--chip-bg);
+    display:inline-block;
+    padding:4px 10px;
+    margin:40px 0 16px;
+  }
+
+  h1.title{font-size:clamp(34px,6vw,52px);line-height:0.98;margin-bottom:14px;}
+  .dek{color:var(--muted);font-size:17px;max-width:56ch;margin-bottom:28px;}
+
+  .ops-block{
+    border:1px solid var(--line);
+    background:var(--panel);
+    padding:22px 24px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px 28px;
+    margin-bottom:40px;
+  }
+  .ops-field dt{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin-bottom:4px;
+  }
+  .ops-field dd{margin:0;font-size:15px;}
+  .ops-field{margin:0;}
+
+  .timeline{
+    display:flex;
+    border-top:2px solid var(--ink);
+    border-bottom:2px solid var(--ink);
+    margin:0 0 48px;
+    overflow-x:auto;
+  }
+  .timeline .seg{
+    flex:1 0 auto;
+    min-width:96px;
+    padding:10px 12px;
+    border-left:1px solid var(--line);
+  }
+  .timeline .seg:first-child{border-left:none;}
+  .timeline .seg .hr{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--accent);
+    background:none;
+    letter-spacing:0.04em;
+  }
+  .timeline .seg .lbl{font-size:13px;font-weight:600;margin-top:2px;}
+
+  section.phase{margin:56px 0;}
+  .phase-head{
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:12px;
+    margin-bottom:18px;
+  }
+  .phase-num{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:44px;
+    color:var(--accent);
+    line-height:1;
+  }
+  .phase-title{font-size:24px;font-family:var(--font-display);}
+  .phase-obj{color:var(--muted);font-size:15px;margin:-6px 0 20px;max-width:58ch;}
+
+  p{margin:14px 0;}
+  ol.steps, ul.steps{margin:14px 0;padding-left:22px;}
+  ol.steps li, ul.steps li{margin:8px 0;}
+  strong{font-weight:600;}
+  code.inline{
+    font-family:var(--font-mono);
+    font-size:0.9em;
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:1px 5px;
+  }
+
+  .cmd{margin:18px 0;border:1px solid var(--console-line);}
+  .cmd-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--console-line);
+    padding:6px 10px;
+  }
+  .cmd-host{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--console-accent);
+    letter-spacing:0.03em;
+  }
+  .copy-btn{
+    font-family:var(--font-mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    background:transparent;
+    border:1px solid var(--console-accent);
+    color:var(--console-accent);
+    padding:3px 9px;
+    cursor:pointer;
+  }
+  .copy-btn:hover{background:var(--console-accent);color:var(--console-bg);}
+  .copy-btn:focus-visible, a:focus-visible, button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .cmd pre{
+    margin:0;
+    background:var(--console-bg);
+    color:var(--console-ink);
+    padding:14px 16px;
+    overflow-x:auto;
+    font-family:var(--font-mono);
+    font-size:13.5px;
+    line-height:1.55;
+  }
+  .cmd pre code{white-space:pre;}
+
+  .callout{
+    border-left:3px solid var(--accent);
+    background:var(--panel);
+    padding:12px 16px;
+    margin:20px 0;
+    font-size:14.5px;
+  }
+  .callout .tag{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:block;
+    margin-bottom:4px;
+  }
+
+  .diagram{margin:24px 0 8px;}
+  .diagram svg{width:100%;height:auto;display:block;}
+
+  .checklist{list-style:none;margin:16px 0;padding:0;}
+  .checklist li{
+    display:flex;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14.5px;
+  }
+  .checklist li::before{
+    content:"";
+    flex:0 0 auto;
+    width:14px;height:14px;
+    margin-top:3px;
+    border:1.5px solid var(--muted);
+  }
+
+  table.ports{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+  table.ports th, table.ports td{
+    text-align:left;
+    padding:7px 10px;
+    border-bottom:1px solid var(--line);
+    font-variant-numeric:tabular-nums;
+  }
+  table.ports th{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:500;
+  }
+
+  footer{
+    margin-top:70px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+</style>
+
+<div class="wrap">
+
+  <span class="kicker">AWS &middot; One-Day Build</span>
+  <h1 class="title">Tactical Link Runbook</h1>
+  <p class="dek">A DIL demo you can stand up, break, and tear down in a single day: three EC2 instances, one shaped and lossy link, a video stream that plays clean until injected traffic drowns it.</p>
+
+  <dl class="ops-block">
+    <div class="ops-field"><dt>Objective</dt><dd>Show video freeze at the receiver caused by traffic saturating a bandwidth-constrained, tactical-radio-like link.</dd></div>
+    <div class="ops-field"><dt>Platform</dt><dd>AWS &mdash; 1 VPC, 3 subnets, 3 EC2 instances (Ubuntu 22.04)</dd></div>
+    <div class="ops-field"><dt>Method</dt><dd>tc/netem for shaping, ffmpeg for video, iperf3 for the flood</dd></div>
+    <div class="ops-field"><dt>Teardown</dt><dd>Full stack removable in under 5 minutes (Phase 05)</dd></div>
+  </dl>
+
+  <div class="timeline">
+    <div class="seg"><div class="hr">HR 0&ndash;1</div><div class="lbl">Provision</div></div>
+    <div class="seg"><div class="hr">HR 1&ndash;2</div><div class="lbl">Force the route</div></div>
+    <div class="seg"><div class="hr">HR 2&ndash;3</div><div class="lbl">Shape the link</div></div>
+    <div class="seg"><div class="hr">HR 3&ndash;4</div><div class="lbl">Stream video</div></div>
+    <div class="seg"><div class="hr">HR 4&ndash;5</div><div class="lbl">Inject &amp; break it</div></div>
+    <div class="seg"><div class="hr">HR 5&ndash;8</div><div class="lbl">Rehearse &amp; buffer</div></div>
+  </div>
+
+  <p>The trick to a clean demo is a <strong>middlebox</strong>: a third instance that sits on the path between the video source and the receiver and does nothing but shape and, later, absorb traffic. Neither endpoint knows it's there.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 700 190" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        .box{fill:none;stroke:var(--ink);stroke-width:1.5;}
+        .boxfill{fill:var(--panel);}
+        .lbl{font-family:var(--font-mono);font-size:11px;fill:var(--ink);}
+        .lbl2{font-family:var(--font-mono);font-size:10px;fill:var(--muted);}
+        .accentline{stroke:var(--accent);stroke-width:2;fill:none;}
+        .arrowhead{fill:var(--accent);}
+        .note{font-family:var(--font-body);font-size:11px;fill:var(--muted);}
+      </style>
+      <rect class="box boxfill" x="10" y="55" width="150" height="70"/>
+      <text class="lbl" x="30" y="85">SOURCE</text>
+      <text class="lbl2" x="30" y="102">10.0.1.0/24</text>
+      <text class="lbl2" x="30" y="115">ffmpeg + iperf3</text>
+
+      <rect class="box boxfill" x="275" y="30" width="150" height="120"/>
+      <text class="lbl" x="295" y="60">SHAPER</text>
+      <text class="lbl2" x="295" y="77">10.0.2.0/24</text>
+      <text class="lbl2" x="295" y="90">tc + netem</text>
+      <text class="lbl2" x="295" y="103">src/dst check: off</text>
+      <text class="lbl2" x="295" y="116">ip_forward: on</text>
+
+      <rect class="box boxfill" x="540" y="55" width="150" height="70"/>
+      <text class="lbl" x="560" y="85">RECEIVER</text>
+      <text class="lbl2" x="560" y="102">10.0.3.0/24</text>
+      <text class="lbl2" x="560" y="115">ffplay + iperf3 -s</text>
+
+      <path class="accentline" d="M160 90 L273 90"/>
+      <polygon class="arrowhead" points="273,90 263,85 263,95"/>
+      <path class="accentline" d="M427 90 L538 90"/>
+      <polygon class="arrowhead" points="538,90 528,85 528,95"/>
+
+      <text class="note" x="170" y="150">route: SOURCE&rsquo;s /32 for RECEIVER &rarr; SHAPER eni</text>
+      <text class="note" x="430" y="175">route: RECEIVER&rsquo;s /32 for SOURCE &rarr; SHAPER eni</text>
+    </svg>
+  </div>
+
+  <div class="callout">
+    <span class="tag">Why this works in a VPC</span>
+    A route table's local route for the VPC CIDR is normally unbeatable &mdash; but a route with a <em>more specific</em> destination (a /32 for one instance's private IP) takes precedence over it. Point that /32 at the shaper's network interface in both subnets' route tables, and every packet between source and receiver is forced through it, even though all three sit in one VPC.
+  </div>
+
+  <!-- PHASE 00 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">00</span><span class="phase-title">Provision</span></div>
+    <p class="phase-obj">Stand up the VPC, three subnets, three instances, and the security group. Run from a machine with AWS CLI v2 configured and an existing key pair.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>export AWS_REGION=us-east-1
+export KEY_NAME=your-existing-keypair
+export AZ=${AWS_REGION}a
+
+# VPC + IGW
+export VPC_ID=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 \
+  --query 'Vpc.VpcId' --output text --region $AWS_REGION)
+aws ec2 create-tags --resources $VPC_ID --tags Key=Name,Value=dil-demo --region $AWS_REGION
+export IGW_ID=$(aws ec2 create-internet-gateway --query 'InternetGateway.InternetGatewayId' \
+  --output text --region $AWS_REGION)
+aws ec2 attach-internet-gateway --vpc-id $VPC_ID --internet-gateway-id $IGW_ID --region $AWS_REGION
+
+# Three subnets: source, shaper, receiver
+export SUBNET_SRC=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.1.0/24 \
+  --availability-zone $AZ --query 'Subnet.SubnetId' --output text --region $AWS_REGION)
+export SUBNET_SHAPE=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.2.0/24 \
+  --availability-zone $AZ --query 'Subnet.SubnetId' --output text --region $AWS_REGION)
+export SUBNET_RCV=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.3.0/24 \
+  --availability-zone $AZ --query 'Subnet.SubnetId' --output text --region $AWS_REGION)
+
+for s in $SUBNET_SRC $SUBNET_SHAPE $SUBNET_RCV; do
+  aws ec2 modify-subnet-attribute --subnet-id $s --map-public-ip-on-launch --region $AWS_REGION
+done</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># One route table per subnet, each with an internet route (for SSH/updates)
+for pair in "SRC:$SUBNET_SRC" "SHAPE:$SUBNET_SHAPE" "RCV:$SUBNET_RCV"; do
+  name=${pair%%:*}; sn=${pair##*:}
+  rtb=$(aws ec2 create-route-table --vpc-id $VPC_ID --query 'RouteTable.RouteTableId' \
+    --output text --region $AWS_REGION)
+  aws ec2 create-route --route-table-id $rtb --destination-cidr-block 0.0.0.0/0 \
+    --gateway-id $IGW_ID --region $AWS_REGION
+  aws ec2 associate-route-table --route-table-id $rtb --subnet-id $sn --region $AWS_REGION
+  export RTB_$name=$rtb
+done
+
+# Security group: SSH from you, everything internal for the demo traffic
+export SG_ID=$(aws ec2 create-security-group --group-name dil-demo-sg \
+  --description "DIL demo" --vpc-id $VPC_ID --query 'GroupId' --output text --region $AWS_REGION)
+export MY_IP=$(curl -s ifconfig.me)/32
+aws ec2 authorize-security-group-ingress --group-id $SG_ID --protocol tcp --port 22 \
+  --cidr $MY_IP --region $AWS_REGION
+aws ec2 authorize-security-group-ingress --group-id $SG_ID --protocol -1 \
+  --cidr 10.0.0.0/16 --region $AWS_REGION</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># Latest Ubuntu 22.04 AMI, then launch all three
+export AMI_ID=$(aws ssm get-parameters --names \
+  /aws/service/canonical/ubuntu/server/22.04/stable/current/amd64/hvm/ebs-gp2/ami-id \
+  --query 'Parameters[0].Value' --output text --region $AWS_REGION)
+
+launch() { aws ec2 run-instances --image-id $AMI_ID --instance-type t3.small \
+  --key-name $KEY_NAME --subnet-id $1 --security-group-ids $SG_ID \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$2}]" \
+  --query 'Instances[0].InstanceId' --output text --region $AWS_REGION; }
+
+export INSTANCE_SRC=$(launch $SUBNET_SRC dil-source)
+export INSTANCE_SHAPE=$(launch $SUBNET_SHAPE dil-shaper)
+export INSTANCE_RCV=$(launch $SUBNET_RCV dil-receiver)
+
+aws ec2 wait instance-running --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV --region $AWS_REGION
+
+# Pull back the IPs and the shaper's ENI id &mdash; save these, every later phase needs them
+aws ec2 describe-instances --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV \
+  --query 'Reservations[].Instances[].[Tags[?Key==`Name`].Value|[0],PublicIpAddress,PrivateIpAddress,NetworkInterfaces[0].NetworkInterfaceId]' \
+  --output table --region $AWS_REGION</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for</span>
+      <code class="inline">t3.small</code>, not <code class="inline">t3.micro</code> &mdash; the shaper needs headroom to push a video stream and an iperf3 flood through <code class="inline">tc</code> without the instance itself becoming the bottleneck.
+    </div>
+  </section>
+
+  <!-- PHASE 01 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">01</span><span class="phase-title">Force the route</span></div>
+    <p class="phase-obj">Point source&rarr;receiver and receiver&rarr;source traffic at the shaper's ENI, and let the shaper actually forward it.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># Fill in from the table above
+export ENI_SHAPE=eni-xxxxxxxxxxxxxxxxx
+export IP_SRC_PRIV=10.0.1.x
+export IP_RCV_PRIV=10.0.3.x
+
+# Critical: AWS drops anything not addressed to the instance unless this is off
+aws ec2 modify-instance-attribute --instance-id $INSTANCE_SHAPE \
+  --no-source-dest-check --region $AWS_REGION
+
+# Specific /32 routes beat the VPC's local route
+aws ec2 create-route --route-table-id $RTB_SRC --destination-cidr-block ${IP_RCV_PRIV}/32 \
+  --network-interface-id $ENI_SHAPE --region $AWS_REGION
+aws ec2 create-route --route-table-id $RTB_RCV --destination-cidr-block ${IP_SRC_PRIV}/32 \
+  --network-interface-id $ENI_SHAPE --region $AWS_REGION</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo sysctl -w net.ipv4.ip_forward=1
+echo 'net.ipv4.ip_forward=1' | sudo tee -a /etc/sysctl.conf</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>traceroute $IP_RCV_PRIV
+# expect exactly one hop: the shaper's private IP</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Gotcha</span>
+      If <code class="inline">traceroute</code> shows a direct hop instead of routing via the shaper, the /32 route didn't win &mdash; double check it's in the <em>source's</em> route table pointing at the shaper, and that source/dest check is actually off (it doesn't take effect retroactively on in-flight connections; reconnect after changing it).
+    </div>
+  </section>
+
+  <!-- PHASE 02 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">02</span><span class="phase-title">Shape the link</span></div>
+    <p class="phase-obj">Cap the shaper's egress to a tactical-radio-like ceiling and add delay, jitter, and loss with netem.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo apt-get update && sudo apt-get install -y iproute2
+
+sudo tc qdisc add dev eth0 root handle 1: htb default 10
+sudo tc class add dev eth0 parent 1: classid 1:10 htb rate 256kbit ceil 256kbit
+sudo tc qdisc add dev eth0 parent 1:10 handle 10: netem \
+  delay 100ms 20ms distribution normal loss 2% 25%
+
+# check it took
+tc -s qdisc show dev eth0</code></pre>
+    </div>
+
+    <p>256kbit/s is a deliberate choice &mdash; slow enough that a low-bitrate video stream alone plays back cleanly but with visible latency, and slow enough that even a modest flood saturates it completely. Reset any time with:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo tc qdisc del dev eth0 root</code></pre>
+    </div>
+
+    <p>For the "intermittent" half of DIL &mdash; comms windows that drop out entirely &mdash; toggle to full loss on a timer instead of a constant rate:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>cat &lt;&lt;'EOF' &gt; ~/blackout.sh
+#!/bin/bash
+while true; do
+  sudo tc qdisc change dev eth0 parent 1:10 handle 10: netem delay 100ms 20ms loss 2% 25%
+  sleep 45
+  sudo tc qdisc change dev eth0 parent 1:10 handle 10: netem loss 100%
+  sleep 8
+done
+EOF
+chmod +x ~/blackout.sh</code></pre>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Watch for</span>
+      <code class="inline">tc</code> rules do not survive a reboot or a stop/start cycle &mdash; if the instance restarts for any reason, rerun the shaping commands before the demo.
+    </div>
+  </section>
+
+  <!-- PHASE 03 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">03</span><span class="phase-title">Stream video</span></div>
+    <p class="phase-obj">Get a clean, low-bitrate UDP stream playing over the shaped link before anything is injected &mdash; that clean baseline is the "before" half of the demo.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source + receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo apt-get install -y ffmpeg
+wget -O clip.mp4 https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4
+# any local mp4 works fine if that URL is unreachable</code></pre>
+    </div>
+
+    <p>MPEG-TS over UDP instead of raw RTP &mdash; it self-describes the stream, so there's no SDP file to shuttle between hosts, and it's still UDP, so it still stalls realistically under loss.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ffplay -fflags nobuffer udp://0.0.0.0:5004</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>ffmpeg -re -stream_loop -1 -i clip.mp4 -an -c:v libx264 -preset veryfast \
+  -tune zerolatency -b:v 200k -f mpegts udp://$IP_RCV_PRIV:5004</code></pre>
+    </div>
+
+    <p>Confirm it plays &mdash; slow to start, a little laggy, but smooth and unbroken. If it isn't clean here, everything downstream will look like noise instead of a clear before/after.</p>
+  </section>
+
+  <!-- PHASE 04 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">04</span><span class="phase-title">Inject &amp; break it</span></div>
+    <p class="phase-obj">Push a UDP flood across the same shaped link the video is using, and watch the queue &mdash; and the picture &mdash; fall apart.</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source + receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>sudo apt-get install -y iperf3</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">receiver $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>iperf3 -s</code></pre>
+    </div>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">source $ (second terminal)</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># 5 Mbps against a 256 kbit ceiling &mdash; roughly 20x oversubscribed, so
+# the effect is unmistakable rather than marginal
+iperf3 -c $IP_RCV_PRIV -u -b 5M -t 300</code></pre>
+    </div>
+
+    <p>With the flood running alongside the video stream, watch the queue on the shaper build and drop packets:</p>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">shaper $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code>watch -n1 tc -s qdisc show dev eth0
+# the "dropped" counter under the netem line is the story &mdash;
+# it should be climbing fast the moment iperf3 starts</code></pre>
+    </div>
+
+    <p>The receiver's ffplay window stalls and freezes within a few seconds. Stop the <code class="inline">iperf3</code> client and it recovers on its own &mdash; that recovery is worth showing too, since it's the difference between a degraded link and a dead one.</p>
+
+    <table class="ports">
+      <tr><th>Port</th><th>Proto</th><th>Used for</th></tr>
+      <tr><td>22</td><td>TCP</td><td>SSH (from your IP only)</td></tr>
+      <tr><td>5004</td><td>UDP</td><td>Video stream</td></tr>
+      <tr><td>5201</td><td>TCP/UDP</td><td>iperf3</td></tr>
+    </table>
+    <p style="font-size:14px;color:var(--muted);margin-top:-8px;">All covered already by the internal-traffic rule in Phase 00 (all protocols, 10.0.0.0/16) &mdash; listed here for reference if you tighten the security group afterward.</p>
+  </section>
+
+  <!-- PHASE 05 -->
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">05</span><span class="phase-title">Rehearse &amp; tear down</span></div>
+    <p class="phase-obj">Run it twice end to end before the live demo, then know exactly how to shut it off.</p>
+
+    <p><strong>Go / no-go, before you present:</strong></p>
+    <ul class="checklist">
+      <li>Baseline clip plays clean over the shaped link with nothing else running</li>
+      <li>iperf3 flood visibly freezes the picture within ~5&ndash;10 seconds, every time</li>
+      <li>Stopping the flood lets playback recover without restarting anything</li>
+      <li><code class="inline">tc</code> rules re-applied if either instance was stopped/started since Phase 02</li>
+      <li>Optional: <code class="inline">blackout.sh</code> rehearsed if you want the intermittency angle too</li>
+    </ul>
+
+    <div class="cmd">
+      <div class="cmd-bar"><span class="cmd-host">local $</span><button class="copy-btn" data-copy>Copy</button></div>
+      <pre><code># Stop paying for compute without losing the setup (good for an overnight pause)
+aws ec2 stop-instances --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV --region $AWS_REGION
+
+# Full teardown once the demo is done
+aws ec2 terminate-instances --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV --region $AWS_REGION
+aws ec2 wait instance-terminated --instance-ids $INSTANCE_SRC $INSTANCE_SHAPE $INSTANCE_RCV --region $AWS_REGION
+aws ec2 delete-security-group --group-id $SG_ID --region $AWS_REGION
+# subnets first: a route table can't be deleted while still associated with one
+for sn in $SUBNET_SRC $SUBNET_SHAPE $SUBNET_RCV; do aws ec2 delete-subnet --subnet-id $sn --region $AWS_REGION; done
+for rtb in $RTB_SRC $RTB_SHAPE $RTB_RCV; do aws ec2 delete-route-table --route-table-id $rtb --region $AWS_REGION; done
+aws ec2 detach-internet-gateway --internet-gateway-id $IGW_ID --vpc-id $VPC_ID --region $AWS_REGION
+aws ec2 delete-internet-gateway --internet-gateway-id $IGW_ID --region $AWS_REGION
+aws ec2 delete-vpc --vpc-id $VPC_ID --region $AWS_REGION</code></pre>
+    </div>
+  </section>
+
+  <footer>
+    Built for a single working day. Stretch goals if time allows: a fourth "jammer" instance so the flood isn't sharing a box with the video source, or swap the fixed 256kbit cap for a script that ramps it down mid-demo to simulate a link degrading in real time.
+  </footer>
+
+</div>
+
+<script>
+document.querySelectorAll('.copy-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var block = btn.closest('.cmd').querySelector('code');
+    var text = block.innerText;
+    function done(){
+      var prev = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(function(){ btn.textContent = prev; }, 1400);
+    }
+    try{
+      navigator.clipboard.writeText(text).then(done).catch(function(){
+        var range = document.createRange();
+        range.selectNodeContents(block);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        done();
+      });
+    }catch(e){
+      try{
+        var range = document.createRange();
+        range.selectNodeContents(block);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        done();
+      }catch(e2){}
+    }
+  });
+});
+</script>
